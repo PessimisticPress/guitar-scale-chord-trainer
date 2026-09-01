@@ -61,26 +61,24 @@
     .step-number{align-self:center;text-align:center;font-size:13px;font-weight:800;color:var(--muted)}
     label{font-size:12px;color:var(--muted);display:block}
     select{width:100%;margin-top:5px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);border-radius:10px;min-height:43px;padding:7px 8px;font-size:15px}
-    .settings-panel{padding:0 13px}
-    .settings-toggle{width:100%;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:space-between;text-align:left;gap:10px;min-height:47px}
-    .settings-line{display:flex;align-items:center;gap:7px;white-space:nowrap;min-width:0}
-    .settings-summary{font-size:13px;color:var(--muted);font-weight:400;overflow:hidden;text-overflow:ellipsis}
-    .chevron{color:var(--muted);transition:transform .18s ease}
-    .settings-toggle[aria-expanded="true"] .chevron{transform:rotate(180deg)}
-    .settings-body{border-top:1px solid var(--border);padding:12px 0 14px}
-    .preset-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-    .preset-grid button{font-size:13px;padding:7px 3px;min-height:42px}
-    .preset-grid button.active,.view-button.active{background:var(--accent-soft);border-color:var(--accent)}
-    .custom-range{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
-    .setting-note{font-size:12px;color:var(--muted);line-height:1.4;margin:8px 0 0}
+    .view-button.active{background:var(--accent-soft);border-color:var(--accent)}
     .map-panel{padding:12px 6px 13px}
     .view-switch{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:0 6px 11px}
     .map-head{padding:0 8px 8px}
     .eyebrow{font-size:11px;color:var(--muted);font-weight:750;text-transform:uppercase;letter-spacing:.055em}
     .map-title{font-size:20px;font-weight:820;letter-spacing:-.02em;margin-top:3px}
     .map-instruction{font-size:13px;color:var(--muted);line-height:1.4;margin-top:4px}
-    .fretwrap{width:100%;max-width:560px;margin:0 auto;overflow:hidden}
-    svg{display:block;width:100%;height:auto;min-height:218px}
+    .board-shell{position:relative;width:100%;max-width:680px;margin:0 auto;padding-left:42px}
+    .string-gutter{position:absolute;z-index:3;left:0;top:0;width:42px;height:222px;background:var(--panel);border-right:1px solid var(--border);box-shadow:5px 0 9px rgba(30,35,53,.07);pointer-events:none}
+    .string-gutter span{position:absolute;right:5px;transform:translateY(-50%);font-size:9px;font-weight:650;color:var(--muted);white-space:nowrap}
+    .fret-scroller{width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;touch-action:pan-x pan-y}
+    .fret-scroller::-webkit-scrollbar{display:none}
+    svg{display:block;width:888px;height:222px;max-width:none;min-width:888px}
+    .neck-nav{display:grid;grid-template-columns:46px 1fr 46px;align-items:center;gap:8px;margin:8px 8px 0}
+    .neck-nav button{min-height:42px;padding:6px;font-size:19px;background:var(--panel-2)}
+    .neck-location{text-align:center;line-height:1.2}
+    .neck-location strong{display:block;font-size:13px}
+    .neck-location span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
     .legend{display:flex;flex-wrap:wrap;gap:8px 13px;margin:10px 9px 0;font-size:12px;color:var(--muted)}
     .legend-item{display:flex;align-items:center;gap:6px}
     .swatch{width:15px;height:15px;border-radius:50%;display:inline-block;flex:0 0 auto}
@@ -101,7 +99,8 @@
     @media (max-width:390px){
       .editor-row{grid-template-columns:25px 1fr 1fr .72fr;gap:5px}
       .editor-row select{font-size:14px;padding-left:5px;padding-right:3px}
-      .preset-grid{grid-template-columns:repeat(3,1fr)}
+      .board-shell{padding-left:39px}
+      .string-gutter{width:39px}
     }
     @media (max-width:335px){
       .editor-row{grid-template-columns:24px 1fr 1fr}
@@ -127,21 +126,6 @@
     <div id="progressionEditor" class="editor hidden"></div>
   </section>
 
-  <section class="panel settings-panel" aria-label="Neck range settings">
-    <button id="settingsToggle" class="settings-toggle" type="button" aria-expanded="false" aria-controls="settingsBody">
-      <span class="settings-line"><span class="section-title">Neck area</span><span id="settingsSummary" class="settings-summary">· Frets 3–12</span></span>
-      <span class="chevron" aria-hidden="true">⌄</span>
-    </button>
-    <div id="settingsBody" class="settings-body hidden">
-      <div id="presetGrid" class="preset-grid" role="group" aria-label="Fret range presets"></div>
-      <div class="custom-range">
-        <label>First fret<select id="minFret"></select></label>
-        <label>Last fret<select id="maxFret"></select></label>
-      </div>
-      <p class="setting-note">Up to 10 fret positions are shown together so the pathway stays readable.</p>
-    </div>
-  </section>
-
   <section class="panel map-panel" aria-labelledby="mapTitle">
     <div class="view-switch" role="group" aria-label="Map view">
       <button class="view-button active" type="button" data-view="current">Current pattern</button>
@@ -152,13 +136,24 @@
       <div id="mapTitle" class="map-title">C major pentatonic · 3–2</div>
       <div id="mapInstruction" class="map-instruction">Tap any outlined root to align the pathway from there.</div>
     </div>
-    <div class="fretwrap">
-      <svg id="fretboard" viewBox="0 0 390 246" role="img" aria-labelledby="boardTitle boardDescription">
-        <title id="boardTitle">Chord-specific pentatonic pathway</title>
-        <desc id="boardDescription">A guitar fretboard showing a diagonal pentatonic pathway.</desc>
-        <g id="boardBackground"></g><g id="inlays"></g><g id="frets"></g><g id="strings"></g>
-        <g id="routeLines"></g><g id="markers"></g><g id="labels"></g>
-      </svg>
+    <div class="board-shell">
+      <div class="string-gutter" aria-hidden="true">
+        <span style="top:25px">1st E</span><span style="top:55.8px">2nd B</span><span style="top:86.6px">3rd G</span>
+        <span style="top:117.4px">4th D</span><span style="top:148.2px">5th A</span><span style="top:179px">6th E</span>
+      </div>
+      <div id="fretScroller" class="fret-scroller" aria-label="Scrollable guitar fretboard, frets 0 through 22">
+        <svg id="fretboard" viewBox="0 0 888 222" role="img" aria-labelledby="boardTitle boardDescription">
+          <title id="boardTitle">Chord-specific pentatonic pathway</title>
+          <desc id="boardDescription">A horizontally scrollable guitar fretboard showing a diagonal pentatonic pathway.</desc>
+          <g id="boardBackground"></g><g id="inlays"></g><g id="frets"></g><g id="strings"></g>
+          <g id="routeLines"></g><g id="markers"></g><g id="labels"></g>
+        </svg>
+      </div>
+    </div>
+    <div class="neck-nav" aria-label="Move along the fretboard">
+      <button id="lowerFrets" type="button" aria-label="Move toward lower frets">←</button>
+      <div class="neck-location"><strong id="visibleFrets">Frets 3–11</strong><span>Swipe the fretboard</span></div>
+      <button id="higherFrets" type="button" aria-label="Move toward higher frets">→</button>
     </div>
     <div id="legend" class="legend"></div>
     <div class="nav-row">
@@ -172,7 +167,7 @@
     <div id="analysisBody"></div>
   </section>
 
-  <p class="version">Prototype v0.2</p>
+  <p class="version">Candidate prototype v0.2.1</p>
 </main>
 
 <script>
@@ -184,7 +179,7 @@
   const OPEN_ABS=[40,45,50,55,59,64];
   const STRING_LABELS=["6th E","5th A","4th D","3rd G","2nd B","1st E"];
   const ROOT_OPTIONS=["C","C♯/D♭","D","D♯/E♭","E","F","F♯/G♭","G","G♯/A♭","A","A♯/B♭","B"];
-  const PRESETS=[[0,9],[3,12],[5,14],[10,19],[13,22]];
+  const MIN_FRET=0,MAX_FRET=22,FRET_WIDTH=38,BOARD_LEFT=5,BOARD_TOP=25,BOARD_HEIGHT=154;
   const MAJOR_NAMES=[
     ["C","D","E","F","G","A","B"],["D♭","E♭","F","G♭","A♭","B♭","C"],
     ["D","E","F♯","G","A","B","C♯"],["E♭","F","G","A♭","B♭","C","D"],
@@ -207,18 +202,18 @@
 
   const state={
     progression:[{root:0,quality:"major",bars:3},{root:4,quality:"minor",bars:1},{root:7,quality:"major",bars:1}],
-    active:0,view:"current",minFret:3,maxFret:12,anchors:[null,null,null]
+    active:0,view:"current",viewportFret:3,anchors:[null,null,null]
   };
 
   const $=id=>document.getElementById(id);
   const el={
     progression:$("progression"),allSummary:$("allSummary"),editProgression:$("editProgression"),progressionEditor:$("progressionEditor"),
-    settingsToggle:$("settingsToggle"),settingsBody:$("settingsBody"),settingsSummary:$("settingsSummary"),presetGrid:$("presetGrid"),
-    minFret:$("minFret"),maxFret:$("maxFret"),mapEyebrow:$("mapEyebrow"),mapTitle:$("mapTitle"),mapInstruction:$("mapInstruction"),
+    mapEyebrow:$("mapEyebrow"),mapTitle:$("mapTitle"),mapInstruction:$("mapInstruction"),fretScroller:$("fretScroller"),visibleFrets:$("visibleFrets"),
     boardTitle:$("boardTitle"),boardDescription:$("boardDescription"),boardBackground:$("boardBackground"),inlays:$("inlays"),
     frets:$("frets"),strings:$("strings"),routeLines:$("routeLines"),markers:$("markers"),labels:$("labels"),legend:$("legend"),
-    previousChord:$("previousChord"),nextChord:$("nextChord"),analysisTitle:$("analysisTitle"),analysisBody:$("analysisBody")
+    lowerFrets:$("lowerFrets"),higherFrets:$("higherFrets"),previousChord:$("previousChord"),nextChord:$("nextChord"),analysisTitle:$("analysisTitle"),analysisBody:$("analysisBody")
   };
+  let initialScrollApplied=false,scrollSaveTimer=null,suppressAnchorClick=false,touchStart=null;
 
   function mod(n,m=12){return((n%m)+m)%m}
   function svg(tag,attrs={},text=""){
@@ -268,7 +263,7 @@
   function rootAnchors(chord){
     const anchors=[];
     for(let s=0;s<6;s++){
-      for(let f=state.minFret;f<=state.maxFret;f++){
+      for(let f=MIN_FRET;f<=MAX_FRET;f++){
         if(pitchAt(s,f)===chord.root)anchors.push({s,f});
       }
     }
@@ -289,7 +284,7 @@
       offsets.forEach(offset=>{
         const absolute=anchorAbs+pair*12+offset;
         const fret=absolute-OPEN_ABS[s];
-        if(fret>=state.minFret&&fret<=state.maxFret&&fret>=0&&fret<=22){
+        if(fret>=MIN_FRET&&fret<=MAX_FRET){
           positions.push({s,f:fret,pitch:mod(absolute),absolute});
         }
       });
@@ -298,10 +293,13 @@
   }
   function chooseAnchor(chord){
     const anchors=rootAnchors(chord);
-    const center=(state.minFret+state.maxFret)/2;
+    const visibleEnd=Math.min(MAX_FRET,state.viewportFret+9);
+    const center=(state.viewportFret+visibleEnd)/2;
     return anchors.sort((a,b)=>{
-      const countDiff=buildPath(chord,b).length-buildPath(chord,a).length;
-      if(countDiff)return countDiff;
+      const visibleA=buildPath(chord,a).filter(position=>position.f>=state.viewportFret&&position.f<=visibleEnd).length;
+      const visibleB=buildPath(chord,b).filter(position=>position.f>=state.viewportFret&&position.f<=visibleEnd).length;
+      if(visibleA!==visibleB)return visibleB-visibleA;
+      const countDiff=buildPath(chord,b).length-buildPath(chord,a).length;if(countDiff)return countDiff;
       const stringDiff=a.s-b.s;
       if(stringDiff)return stringDiff;
       return Math.abs(a.f-center)-Math.abs(b.f-center);
@@ -327,19 +325,11 @@
       }
       if(Number.isInteger(saved.active)&&saved.active>=0&&saved.active<3)state.active=saved.active;
       if(["current","transition"].includes(saved.view))state.view=saved.view;
-      if(Number.isInteger(saved.minFret))state.minFret=saved.minFret;
-      if(Number.isInteger(saved.maxFret))state.maxFret=saved.maxFret;
+      if(Number.isInteger(saved.viewportFret))state.viewportFret=Math.max(MIN_FRET,Math.min(MAX_FRET,saved.viewportFret));
       if(Array.isArray(saved.anchors)&&saved.anchors.length===3)state.anchors=saved.anchors;
-      normalizeRange("max");
     }catch(error){/* Safely retain defaults. */}
   }
   function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(error){}}
-  function normalizeRange(changed){
-    state.minFret=Math.max(0,Math.min(22,Number(state.minFret)));
-    state.maxFret=Math.max(0,Math.min(22,Number(state.maxFret)));
-    if(state.minFret>state.maxFret){if(changed==="min")state.maxFret=state.minFret;else state.minFret=state.maxFret}
-    if(state.maxFret-state.minFret>9){if(changed==="min")state.maxFret=Math.min(22,state.minFret+9);else state.minFret=Math.max(0,state.maxFret-9)}
-  }
 
   function buildSelectOptions(select,options,value){
     select.innerHTML="";
@@ -388,39 +378,25 @@
     const chordNames=namePitches(allChord,state.progression[0]);
     el.allSummary.innerHTML=`<strong>Across all three patterns:</strong> ${formatList(scaleNames)}<br><strong>Chord tones shared by all:</strong> ${formatList(chordNames)}`;
   }
-  function buildRangeControls(){
-    const options=Array.from({length:23},(_,value)=>({label:String(value),value}));
-    buildSelectOptions(el.minFret,options,state.minFret);buildSelectOptions(el.maxFret,options,state.maxFret);
-    el.presetGrid.innerHTML="";
-    PRESETS.forEach(([min,max])=>{
-      const button=document.createElement("button");button.type="button";button.textContent=`${min}–${max}`;
-      button.classList.toggle("active",min===state.minFret&&max===state.maxFret);
-      button.addEventListener("click",()=>{state.minFret=min;state.maxFret=max;state.anchors=[null,null,null];save();render()});
-      el.presetGrid.appendChild(button);
-    });
-    el.settingsSummary.textContent=`· Frets ${state.minFret}–${state.maxFret}`;
-  }
-
   function drawBoardBase(){
     [el.boardBackground,el.inlays,el.frets,el.strings,el.routeLines,el.markers,el.labels].forEach(group=>group.innerHTML="");
-    const left=34,right=382,top=31,height=154,positions=state.maxFret-state.minFret+1,width=right-left,column=width/positions,gap=height/5;
+    const left=BOARD_LEFT,right=BOARD_LEFT+(MAX_FRET-MIN_FRET+1)*FRET_WIDTH,top=BOARD_TOP,height=BOARD_HEIGHT,positions=MAX_FRET-MIN_FRET+1,column=FRET_WIDTH,gap=height/5;
     el.boardBackground.appendChild(svg("rect",{x:left,y:top,width,height,rx:8,fill:"var(--panel-2)",stroke:"var(--border)","stroke-width":1}));
     for(let boundary=0;boundary<=positions;boundary++){
-      const x=left+boundary*column;const rightFret=state.minFret+boundary;const nut=state.minFret===0&&rightFret===1;
+      const x=left+boundary*column;const rightFret=MIN_FRET+boundary;const nut=rightFret===1;
       el.frets.appendChild(svg("line",{x1:x,x2:x,y1:top,y2:top+height,stroke:nut?"var(--text)":"var(--line)","stroke-width":nut?3.2:1.15}));
     }
     for(let s=0;s<6;s++){
       const y=top+(5-s)*gap;el.strings.appendChild(svg("line",{x1:left,x2:right,y1:y,y2:y,stroke:"var(--text)","stroke-width":1+(5-s)*.3,opacity:.86}));
-      el.labels.appendChild(svg("text",{x:30,y:y+3,"text-anchor":"end","font-size":8.2,fill:"var(--muted)"},STRING_LABELS[s]));
     }
-    [3,5,7,9,12,15,17,19,21].filter(f=>f>=state.minFret&&f<=state.maxFret).forEach(fret=>{
-      const x=left+(fret-state.minFret+.5)*column;const ys=fret===12?[top+height*.36,top+height*.64]:[top+height/2];
+    [3,5,7,9,12,15,17,19,21].forEach(fret=>{
+      const x=left+(fret-MIN_FRET+.5)*column;const ys=fret===12?[top+height*.36,top+height*.64]:[top+height/2];
       ys.forEach(y=>el.inlays.appendChild(svg("circle",{cx:x,cy:y,r:3,fill:"var(--muted)",opacity:.2})));
     });
-    for(let fret=state.minFret;fret<=state.maxFret;fret++){
-      const x=left+(fret-state.minFret+.5)*column;el.labels.appendChild(svg("text",{x,y:210,"text-anchor":"middle","font-size":9,fill:"var(--muted)"},String(fret)));
+    for(let fret=MIN_FRET;fret<=MAX_FRET;fret++){
+      const x=left+(fret-MIN_FRET+.5)*column;el.labels.appendChild(svg("text",{x,y:204,"text-anchor":"middle","font-size":10,fill:"var(--muted)"},String(fret)));
     }
-    return{xFor:fret=>left+(fret-state.minFret+.5)*column,yFor:s=>top+(5-s)*gap};
+    return{xFor:fret=>left+(fret-MIN_FRET+.5)*column,yFor:s=>top+(5-s)*gap};
   }
   function pathPoints(path,geometry){return path.map(pos=>`${geometry.xFor(pos.f)},${geometry.yFor(pos.s)}`).join(" ")}
   function addMarker(position,geometry,style,label,extra={}){
@@ -432,7 +408,7 @@
   }
   function makeAnchorInteractive(group,anchor,index){
     group.setAttribute("role","button");group.setAttribute("tabindex","0");group.setAttribute("aria-label",`Use ${chordName(state.progression[index])} root on ${STRING_LABELS[anchor.s]}, fret ${anchor.f}`);
-    const choose=()=>{state.anchors[index]={s:anchor.s,f:anchor.f};save();render()};
+    const choose=()=>{if(suppressAnchorClick)return;state.anchors[index]={s:anchor.s,f:anchor.f};save();render()};
     group.addEventListener("click",choose);group.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();choose()}});
   }
   function drawCurrent(){
@@ -457,7 +433,7 @@
     });
     el.mapEyebrow.textContent="Current chord";el.mapTitle.textContent=`${scaleName(chord)} · ${chord.quality==="major"?"3–2":"2–3"}`;
     el.mapInstruction.textContent="Tap any outlined root to align the pathway from there.";
-    el.boardTitle.textContent=`${scaleName(chord)} pathway`;el.boardDescription.textContent=`A diagonal ${chord.quality==="major"?"3-2":"2-3"} pathway for ${chordName(chord)} from frets ${state.minFret} through ${state.maxFret}.`;
+    el.boardTitle.textContent=`${scaleName(chord)} pathway`;el.boardDescription.textContent=`A diagonal ${chord.quality==="major"?"3-2":"2-3"} pathway for ${chordName(chord)} on a scrollable fretboard from fret 0 through 22.`;
   }
   function drawTransition(){
     const currentIndex=state.active,nextIndex=(state.active+1)%3,current=state.progression[currentIndex],next=state.progression[nextIndex];
@@ -496,25 +472,43 @@
     el.analysisTitle.textContent=`Moving from ${chordName(current)} to ${chordName(next)}${suffix}`;
     el.analysisBody.innerHTML=`<p class="fact"><strong>Works in both patterns:</strong> ${formatList(namePitches(common,current))}</p><p class="fact"><strong>Strong landing notes:</strong> ${formatList(namePitches(sharedTones,next))}</p><p class="fact"><strong>Pattern change:</strong> ${formatList(namePitches(leaving,current))} leaves; ${formatList(namePitches(entering,next))} enters.</p>`;
   }
+  function visibleFretCount(){return Math.max(1,Math.floor((el.fretScroller.clientWidth||342)/FRET_WIDTH))}
+  function maximumStart(){return Math.max(MIN_FRET,MAX_FRET-visibleFretCount()+1)}
+  function updateVisibleFrets(){
+    const first=Math.max(MIN_FRET,Math.min(maximumStart(),Math.round(el.fretScroller.scrollLeft/FRET_WIDTH)));
+    const last=Math.min(MAX_FRET,first+visibleFretCount()-1);
+    state.viewportFret=first;el.visibleFrets.textContent=`Frets ${first}–${last}`;
+    el.lowerFrets.disabled=first<=MIN_FRET;el.higherFrets.disabled=last>=MAX_FRET;
+  }
+  function scrollToFret(fret,smooth=true){
+    const target=Math.max(MIN_FRET,Math.min(maximumStart(),fret));
+    if(typeof el.fretScroller.scrollTo==="function")el.fretScroller.scrollTo({left:target*FRET_WIDTH,behavior:smooth?"smooth":"auto"});
+    else el.fretScroller.scrollLeft=target*FRET_WIDTH;
+    state.viewportFret=target;updateVisibleFrets();
+  }
+  function shiftFretboard(amount){scrollToFret(Math.round(el.fretScroller.scrollLeft/FRET_WIDTH)+amount,true)}
   function render(){
-    renderProgression();buildEditors();buildRangeControls();
+    renderProgression();buildEditors();
     document.querySelectorAll(".view-button").forEach(button=>button.classList.toggle("active",button.dataset.view===state.view));
     if(state.view==="current")drawCurrent();else drawTransition();
     renderLegend();renderAnalysis();
     el.previousChord.textContent=`← ${chordName(state.progression[(state.active+2)%3])}`;
     el.nextChord.textContent=`${chordName(state.progression[(state.active+1)%3])} →`;
+    if(!initialScrollApplied){initialScrollApplied=true;requestAnimationFrame(()=>scrollToFret(state.viewportFret,false))}
+    else updateVisibleFrets();
   }
 
   el.editProgression.addEventListener("click",()=>{
     const expanded=el.editProgression.getAttribute("aria-expanded")==="true";el.editProgression.setAttribute("aria-expanded",String(!expanded));
     el.progressionEditor.classList.toggle("hidden",expanded);el.editProgression.textContent=expanded?"Edit":"Done";
   });
-  el.settingsToggle.addEventListener("click",()=>{
-    const expanded=el.settingsToggle.getAttribute("aria-expanded")==="true";el.settingsToggle.setAttribute("aria-expanded",String(!expanded));el.settingsBody.classList.toggle("hidden",expanded);
-  });
   document.querySelectorAll(".view-button").forEach(button=>button.addEventListener("click",()=>{state.view=button.dataset.view;save();render()}));
-  el.minFret.addEventListener("change",()=>{state.minFret=Number(el.minFret.value);normalizeRange("min");state.anchors=[null,null,null];save();render()});
-  el.maxFret.addEventListener("change",()=>{state.maxFret=Number(el.maxFret.value);normalizeRange("max");state.anchors=[null,null,null];save();render()});
+  el.fretScroller.addEventListener("scroll",()=>{updateVisibleFrets();clearTimeout(scrollSaveTimer);scrollSaveTimer=setTimeout(save,180)},{passive:true});
+  el.fretScroller.addEventListener("touchstart",event=>{const touch=event.touches[0];touchStart=touch?{x:touch.clientX,y:touch.clientY}:null;suppressAnchorClick=false},{passive:true});
+  el.fretScroller.addEventListener("touchmove",event=>{if(!touchStart)return;const touch=event.touches[0];if(touch&&(Math.abs(touch.clientX-touchStart.x)>8||Math.abs(touch.clientY-touchStart.y)>8))suppressAnchorClick=true},{passive:true});
+  el.fretScroller.addEventListener("touchend",()=>{touchStart=null;if(suppressAnchorClick)setTimeout(()=>{suppressAnchorClick=false},140)},{passive:true});
+  el.lowerFrets.addEventListener("click",()=>shiftFretboard(-3));
+  el.higherFrets.addEventListener("click",()=>shiftFretboard(3));
   el.previousChord.addEventListener("click",()=>{state.active=(state.active+2)%3;save();render()});
   el.nextChord.addEventListener("click",()=>{state.active=(state.active+1)%3;save();render()});
 
