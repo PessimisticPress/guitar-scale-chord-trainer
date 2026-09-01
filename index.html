@@ -264,7 +264,7 @@
     <span id="conceptText"> G, B, and D are emphasized because G major is the active chord.</span>
   </aside>
 
-  <p class="version">Prototype v0.1</p>
+  <p class="version">Prototype v0.1.1</p>
 </main>
 
 <script>
@@ -672,7 +672,7 @@
             }));
           }
           elements.noteMarkers.appendChild(svgElement("circle", {
-            cx:x, cy:y, r,
+            cx:x, cy:y, r:radius,
             fill:isChordTone ? "var(--target)" : "var(--scale)",
             stroke:isChordTone ? "var(--panel)" : "none", "stroke-width":isChordTone ? 1.5 : 0
           }));

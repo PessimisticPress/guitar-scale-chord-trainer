@@ -2,7 +2,7 @@
 
 ## Status
 
-Prototype baseline: **v0.1**
+Prototype baseline: **v0.1.1**
 
 These requirements describe the first testable version. Visual treatments are provisional and should be judged on an iPhone before they are treated as settled.
 

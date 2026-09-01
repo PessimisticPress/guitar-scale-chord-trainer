@@ -2,9 +2,13 @@
 
 ## Project Status
 
-First interactive prototype: **v0.1**
+Current interactive prototype: **v0.1.1**
 
 This version is intended for evaluation, especially on an iPhone. Its visual hierarchy and marker treatments are deliberately provisional.
+
+### v0.1.1 Correction
+
+Corrected the SVG note-marker radius reference that prevented scale and chord-tone markers from rendering in v0.1. No intended behavior or music-theory rules changed.
 
 ## Purpose
 
