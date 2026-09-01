@@ -2,98 +2,93 @@
 
 ## Project Status
 
-Current interactive prototype: **v0.1.1**
+Current prototype: **v0.2**
 
-This version is intended for evaluation, especially on an iPhone. Its visual hierarchy and marker treatments are deliberately provisional.
-
-### v0.1.1 Correction
-
-Corrected the SVG note-marker radius reference that prevented scale and chord-tone markers from rendering in v0.1. No intended behavior or music-theory rules changed.
+v0.2 is a progression-first redesign. It replaces the information-dense v0.1 scale map with a focused tool for seeing chord-specific pentatonic pathways and moving between them.
 
 ## Purpose
 
-Guitar Scale & Chord Trainer is a mobile-first companion to Guitar Fretboard Trainer. It helps a guitarist see a parent scale continuously across the fretboard while watching the useful target notes change as the active chord changes.
+The app helps a guitarist use Pickup Music's diagonal pentatonic approach over chord changes:
 
-The central principle is simple: **the scale map stays in place; the chord-tone emphasis changes.**
+- major chord → major-pentatonic 3-2 pathway;
+- minor chord → minor-pentatonic 2-3 pathway.
 
-For example, in G major:
+The practical goal is to see where a pathway emerges from any usable root, identify notes that survive a chord change, and locate strong chord-tone landing notes without rebuilding everything by counting from a root.
 
-- G major highlights G–B–D.
-- C major highlights C–E–G.
-- The underlying G-major scale remains G–A–B–C–D–E–F-sharp in both cases.
+## Default Example
 
-## Prototype Features
+The app opens with:
 
-- Major, natural minor, major pentatonic, and minor pentatonic maps
-- All 12 tonic pitch classes with musically correct contextual spelling
-- Note-name, scale-degree, and dots-only views
-- Seven diatonic triads labeled with chord names and Roman numerals
-- Immediate chord-tone switching without moving the parent scale
-- Clear identification of chord tones omitted by a selected pentatonic scale
-- Optional major 3-2 and minor 2-3 diagonal pentatonic pathways
-- Position 1 from the low E string and Position 2 from the A string
-- Fret-range presets for 0–12, 5–17, and 10–22
-- Custom ranges of up to 13 consecutive positions across frets 0–22
-- TAB orientation with low E at the bottom
-- Collapsible settings and locally saved preferences
-- Responsive light and dark themes
+`C × 3 bars → Em × 1 bar → G × 1 bar`
+
+For this progression it reveals:
+
+- C major pentatonic: C–D–E–G–A
+- E minor pentatonic: E–G–A–B–D
+- G major pentatonic: G–A–B–D–E
+- Notes across all three: D–E–G–A
+- Chord tone across all three chords: G
+- C to Em shared chord tones: E and G
+- Em to G shared chord tones: G and B
+
+## Main Views
+
+### Current Pattern
+
+- Shows one chord-specific 3-2 or 2-3 route.
+- Connects the route with a line so the diagonal grouping is visually obvious.
+- Distinguishes chord tones from the remaining pentatonic notes.
+- Shows all roots in the selected neck area.
+- Lets the user tap any root to align the route to that practical entry point.
+
+### Transition
+
+- Overlays the selected current and next pathways.
+- Shows positions available in both routes.
+- Separates positions leaving the current route from positions entering the next.
+- Rings shared chord tones as strong landing-note candidates.
+- States which pitch names work in both pentatonic scales even when the chosen physical pathways do not place every one at the same fret.
+
+## Progression and Range Editing
+
+- Three editable chord slots
+- Root, major/minor quality, and 1–8 bars per slot
+- Fret-range presets from open position through fret 22
+- Custom ranges of up to 10 consecutive positions
+- Complete selected range visible without horizontal scrolling
 
 ## Files
 
-- `index.html` — complete dependency-free application
-- `REQUIREMENTS.md` — agreed prototype behavior and deferred scope
-- `README.md` — project purpose, workflow, and current status
+- `index.html` — complete dependency-free GitHub Pages application
+- `README.md` — project purpose, behavior, and workflow
+- `REQUIREMENTS.md` — agreed v0.2 scope and deferred features
 
 ## Deployment
 
-The application is designed for GitHub Pages:
-
-1. Put `index.html`, `README.md`, and `REQUIREMENTS.md` in the repository root.
-2. Commit them to the `main` branch.
-3. In the repository, open **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**.
-5. Select the `main` branch and `/ (root)`, then save.
+1. Replace the repository-root `index.html`, `README.md`, and `REQUIREMENTS.md` with the v0.2 files.
+2. Commit the changes to `main`.
+3. GitHub Pages republishes automatically when it is already configured for the `main` branch and repository root.
+4. Confirm that the bottom of the live page reads **Prototype v0.2**.
 
 No build step or external dependency is required.
 
 ## Development Workflow
 
-1. Discuss and document meaningful learning or design changes before implementation.
+1. Discuss meaningful learning and interaction decisions before implementation.
 2. Preserve working behavior unless an approved change requires altering it.
 3. Generate complete replacement files for deployment.
 4. Test the published version on an iPhone.
-5. Treat GitHub as the authoritative source for the published application.
-6. After a version is confirmed good, create a release/tag as a known-good checkpoint.
+5. Keep GitHub as the authoritative source for the published app.
+6. Tag confirmed versions as known-good checkpoints.
 
 ## Music-Theory Model
 
-The application calculates scale membership from pitch classes but uses contextual note-name tables so displayed notes retain correct diatonic spelling. Triads are constructed by stacking alternating degrees of the related seven-note parent scale.
+Chord-specific pentatonic notes are calculated from the chord root and quality. Major pentatonic uses degrees 1–2–3–5–6; minor pentatonic uses 1–flat-3–4–5–flat-7. Chord tones use 1–3–5 for major and 1–flat-3–5 for minor.
 
-Major and major-pentatonic selections use the related major key's diatonic chords. Natural minor and minor-pentatonic selections use the related natural-minor key's diatonic chords.
+The pathway is calculated from the selected physical root anchor using absolute guitar pitches. This preserves the diagonal route across the B-string tuning change and prevents the route from wrapping incorrectly to a lower octave inside the displayed range.
 
-When a pentatonic selection omits one of an active chord's tones, the omitted tone appears as a dashed hollow marker. This preserves an honest distinction between:
+Root anchors on strings with the same route parity reproduce the same underlying position. The interface presents every root as an entry point because that is more useful in practice than making Position 1 and Position 2 the primary choice.
 
-- notes in the selected scale;
-- notes in the active chord; and
-- notes that belong to both.
+## Relationship to v0.1
 
-Scale-degree labels always describe the selected parent scale. They do not reset to `1` when a different chord becomes active.
-
-## 3-2 System
-
-The optional pathway connects the familiar pentatonic system to the larger scale map:
-
-- Major-family maps show alternating groups of 3 and 2 notes.
-- Minor-family maps show alternating groups of 2 and 3 notes.
-- Position 1 begins on the low E string.
-- Position 2 begins on the A string.
-
-On a seven-note scale, the pathway highlights only the related pentatonic subset. This makes notes that exist in the parent scale but outside the familiar pentatonic pathway easy to recognize.
-
-## Deferred Features
-
-Follow the Changes, timed chord progressions, quizzes, progressive hiding, ear training, and audio are intentionally excluded until the Scale Map and Chord-Tone Overlay have been tested successfully.
-
-## iOS Direction
-
-The prototype keeps domain logic, rendering, state, and storage conceptually separate inside one file. That makes the current GitHub Pages workflow simple while reducing unnecessary coupling if the project is later rebuilt as a native iOS application.
+The full seven-note scale map, diatonic chord palette, and multi-layer chord overlay remain valid later possibilities, but they are intentionally removed from the primary v0.2 experience. The current app should first prove that it makes chord-specific 3-2/2-3 navigation and transitions easier.

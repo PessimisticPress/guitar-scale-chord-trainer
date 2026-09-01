@@ -1,92 +1,91 @@
-# Guitar Scale & Chord Trainer — Prototype Requirements
+# Guitar Scale & Chord Trainer — v0.2 Requirements
 
 ## Status
 
-Prototype baseline: **v0.1.1**
+Current prototype: **v0.2**
 
-These requirements describe the first testable version. Visual treatments are provisional and should be judged on an iPhone before they are treated as settled.
+This version replaces the broad v0.1 scale-map interface with a progression-first 3-2/2-3 practice tool.
 
-## Learning Goal
+## Central Learning Goal
 
-Help a self-taught guitarist see one continuous scale across the fretboard while recognizing how the most useful target notes change with the active chord.
+Help a guitarist answer three immediate questions while soloing over a chord progression:
 
-The parent scale must remain visually stable during chord changes. Changing from G major to C major while remaining in the key of G, for example, changes the emphasized chord tones from G–B–D to C–E–G; it does not rebuild or transpose the G-major scale.
+1. Where is the chord-specific 3-2 or 2-3 pentatonic pathway in this part of the neck?
+2. Which notes remain available when the chord changes?
+3. Which chord tones provide strong, nearby transition targets?
 
-## Relationship to Guitar Fretboard Trainer
+The interface should reveal a usable route before presenting broader scale theory.
 
-- This is a separate companion application.
-- Guitar Fretboard Trainer v2.1 is a reference for visual language, TAB orientation, mobile behavior, collapsible settings, and local preference storage.
-- The existing trainer files are not part of this application's codebase and must not be modified.
-- The prototype remains a dependency-free, single-page application suitable for GitHub Pages.
+## Progression
 
-## Prototype Scope
+- Provide three editable chord steps.
+- Each step has:
+  - root;
+  - major or minor quality;
+  - bar count from 1 through 8.
+- Default progression: C major for 3 bars, E minor for 1 bar, G major for 1 bar.
+- Major chords use major-pentatonic 3-2 pathways.
+- Minor chords use minor-pentatonic 2-3 pathways.
+- Tapping a progression step makes it the active chord.
+- Previous and Next controls move among the three steps.
+- The transition after the third step compares it with the first step as a loop.
 
-### Scale Map
+## Current Pattern View
 
-- Standard six-string tuning: E–A–D–G–B–E.
-- TAB orientation: low E at the bottom, high E at the top.
-- Select a tonic and one of four scales:
-  - Major
-  - Natural minor
-  - Major pentatonic
-  - Minor pentatonic
-- Default state: G major, frets 0–12, note-name display.
-- Display modes:
-  - Note names
-  - Scale degrees relative to the parent scale
-  - Dots only
-- Scale-degree labels do not change when the active chord changes.
-- Use correct diatonic note spelling for supported keys, including spellings such as F-sharp and E-sharp in F-sharp major.
+- Show only the active chord's chord-specific pentatonic pathway.
+- Use TAB orientation with low E at the bottom.
+- Connect pathway notes with a visible route line.
+- Display chord tones differently from the other pentatonic notes.
+- Show every root occurrence in the selected fret range as a tappable anchor.
+- Tapping a root occurrence should trace the continuous pathway aligned to that root.
+- Root occurrences on later strings may reproduce one of the system's two route families; they should still be available as practical entry points.
+- The selected root anchor must be clearly distinguishable from the other available roots.
 
-### Fret Range
+## Transition View
 
-- Show the complete selected range at once with no horizontal fretboard scrolling.
-- Support frets 0–22.
-- Provide presets for 0–12, 5–17, and 10–22.
-- Permit a custom contiguous range of no more than 13 fret positions.
-- Include normal single and double fretboard position markers throughout the supported range.
+- Compare the selected pathway for the active chord with the selected pathway for the next chord.
+- Distinguish:
+  - positions shared by both selected pathways;
+  - positions belonging only to the current pathway;
+  - positions belonging only to the next pathway.
+- Give an additional ring to visible notes that are chord tones shared by both chords.
+- Summarize in plain language:
+  - notes contained in both pentatonic scales;
+  - shared chord tones that make strong landing notes;
+  - notes leaving and entering the pentatonic collection.
+- Keep transition information out of Current Pattern view.
 
-### Chord-Tone Overlay
+## Across-All Summary
 
-- Derive seven diatonic triads from the related parent major or natural-minor scale.
-- Label every chord with both its name and Roman-numeral function.
-- Display the active chord name, function, and three chord tones.
-- Preserve the scale map when the active chord changes.
-- Distinguish visually among:
-  - ordinary scale tones;
-  - the parent-scale root;
-  - active chord tones;
-  - the active chord root.
-- Do not communicate these roles through color alone.
-- When a pentatonic scale omits a tone from an active diatonic chord, display that chord tone as a hollow dashed marker and identify it as outside the selected scale.
+- Calculate the intersection of all three chord-specific pentatonic scales.
+- Separately calculate chord tones shared by all three chords.
+- Show the result compactly near the progression.
+- Do not imply that a common scale note is necessarily a chord tone.
 
-### 3-2 / 2-3 Pathway
+## Fret Range
 
-- Provide an optional diagonal pathway overlay based on Pickup Music's pentatonic system.
-- Major-family scales use 3 notes followed by 2 notes on alternating strings.
-- Minor-family scales use 2 notes followed by 3 notes on alternating strings.
-- Support Position 1 beginning on the low E string and Position 2 beginning on the A string.
-- On a full major or natural-minor map, the overlay identifies the related pentatonic subset.
-- On a pentatonic map, the overlay identifies the playable diagonal pathway within that scale.
-- Use a shape treatment in addition to color so the pathway remains identifiable without color perception.
+- Default to frets 3–12.
+- Provide presets for 0–9, 3–12, 5–14, 10–19, and 13–22.
+- Allow a custom range of no more than 10 consecutive fret positions.
+- Show the complete selected range at once without horizontal fretboard scrolling.
 
-### Interaction and Persistence
+## Interaction and Persistence
 
-- Use large, iPhone-friendly controls.
-- Keep key, scale, fret-range, and 3-2 settings in a collapsible panel.
-- Keep chord switching and display-mode switching immediately available on the main screen.
-- Save appropriate settings locally and restore them on the next launch.
-- Settings should start collapsed even when saved values are restored.
-- Include light and dark color-scheme support.
+- Mobile-first, with comfortable iPhone touch targets.
+- Keep progression editing and neck-range settings collapsed until requested.
+- Save the progression, active step, selected anchors, fret range, and selected view locally.
+- Restore saved values on the next launch while keeping editors collapsed.
+- Support light and dark system appearance.
 
 ## Explicitly Deferred
 
-- Timed progressions and Follow the Changes
-- Quizzes, scoring, statistics, and adaptive practice
-- Ear training
-- Audio or backing-track playback
-- User-authored chord progressions
+- Full parent-scale map
+- Diatonic chord palette
+- Arbitrary progression length
+- Timed playback or automated bar changes
+- Audio and backing tracks
+- Quizzes, scoring, and statistics
 - Progressive hiding of assistance
 - Native iOS packaging
 
-The prototype should be tested for musical usefulness and mobile readability before any deferred feature is added.
+These features should not be added until the progression-path and transition views prove useful in real practice.

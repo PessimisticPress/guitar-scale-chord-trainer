@@ -6,802 +6,519 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Scale & Chords">
-  <meta name="theme-color" content="#f4f5f9" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#101116" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f5f6f9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111319" media="(prefers-color-scheme: dark)">
   <title>Guitar Scale &amp; Chord Trainer</title>
   <style>
     :root{
-      --bg:#f4f5f9;
-      --panel:#ffffff;
-      --panel-2:#f8f8fb;
-      --text:#171820;
-      --muted:#696b78;
-      --border:#d9dbe5;
-      --soft:#eceef5;
-      --scale:#747887;
-      --scale-text:#ffffff;
-      --accent:#5147c8;
-      --accent-soft:#e9e7ff;
-      --target:#e16f35;
-      --target-text:#ffffff;
-      --path:#078889;
-      --outside:#9b3e69;
-      --fret:#c9cbd4;
-      --shadow:0 8px 22px rgba(30,32,48,.06);
+      --bg:#f5f6f9;--panel:#ffffff;--panel-2:#f8f9fc;--text:#171922;--muted:#676b78;
+      --border:#daddE6;--line:#c9ccd6;--accent:#334f9d;--accent-soft:#e9eefc;
+      --chord:#df6b36;--chord-text:#fff;--route:#4963a8;--common:#087f78;
+      --next:#d26432;--current:#9296a3;--landing:#7b3fa0;--shadow:0 7px 20px rgba(31,38,65,.06);
     }
     @media (prefers-color-scheme:dark){
       :root{
-        --bg:#101116;
-        --panel:#1b1c23;
-        --panel-2:#22232c;
-        --text:#f5f5f8;
-        --muted:#aaaeba;
-        --border:#383a46;
-        --soft:#292b35;
-        --scale:#8b8f9d;
-        --scale-text:#101116;
-        --accent:#aaa4ff;
-        --accent-soft:#302e55;
-        --target:#ff9a66;
-        --target-text:#171820;
-        --path:#48c7c6;
-        --outside:#ef8ab8;
-        --fret:#454752;
-        --shadow:none;
+        --bg:#111319;--panel:#1b1e26;--panel-2:#222630;--text:#f4f5f8;--muted:#adb1bd;
+        --border:#393e4b;--line:#454a57;--accent:#a9baff;--accent-soft:#2c3655;
+        --chord:#ff9a68;--chord-text:#171922;--route:#9eb2ff;--common:#54c9bd;
+        --next:#ff9a68;--current:#7f8492;--landing:#d49bf2;--shadow:none;
       }
     }
     *{box-sizing:border-box}
     html{-webkit-text-size-adjust:100%}
     body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
+      margin:0;background:var(--bg);color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
       -webkit-font-smoothing:antialiased;
-      padding:max(16px,env(safe-area-inset-top)) 12px max(28px,env(safe-area-inset-bottom));
+      padding:max(15px,env(safe-area-inset-top)) 10px max(28px,env(safe-area-inset-bottom));
     }
-    button,select,input{font:inherit}
-    button,select{-webkit-tap-highlight-color:transparent}
-    .app{max-width:760px;margin:0 auto}
-    header{margin:3px 2px 13px}
-    h1{font-size:25px;line-height:1.15;letter-spacing:-.025em;margin:0 0 5px}
-    .sub{color:var(--muted);font-size:14px;line-height:1.4;margin:0}
-    .panel{
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:16px;
-      box-shadow:var(--shadow);
-      margin-bottom:11px;
-    }
-    .settings-panel{padding:0 13px}
-    .settings-toggle{
-      appearance:none;
-      width:100%;min-height:48px;padding:0;border:0;background:transparent;color:var(--text);
-      display:flex;align-items:center;justify-content:space-between;gap:9px;text-align:left;
-    }
-    .settings-line{display:flex;align-items:center;gap:7px;min-width:0;white-space:nowrap}
-    .settings-title{font-size:14px;font-weight:720;flex:0 0 auto}
-    .settings-summary{font-size:13px;color:var(--muted);font-weight:400;overflow:hidden;text-overflow:ellipsis}
-    .chevron{font-size:17px;color:var(--muted);transition:transform .18s ease;flex:0 0 auto}
-    .settings-toggle[aria-expanded="true"] .chevron{transform:rotate(180deg)}
-    .settings-body{border-top:1px solid var(--border);padding:13px 0 14px}
-    .hidden{display:none!important}
-    .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}
-    .full{grid-column:1/-1}
-    label,.field-title{font-size:13px;color:var(--muted);display:block}
-    select{
-      width:100%;margin-top:6px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);
-      border-radius:11px;font-size:16px;min-height:46px;padding:9px 10px;
-    }
+    button,select{font:inherit;-webkit-tap-highlight-color:transparent}
     button{
       appearance:none;border:1px solid var(--border);background:var(--panel);color:var(--text);
-      border-radius:12px;min-height:46px;padding:9px 8px;font-size:15px;font-weight:680;
+      border-radius:12px;min-height:46px;padding:9px 10px;font-size:15px;font-weight:680;
     }
     button:active{transform:scale(.985)}
-    button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-    .segmented{display:grid;gap:7px;margin-top:6px}
-    .range-presets{grid-template-columns:repeat(3,1fr)}
-    .position-buttons{grid-template-columns:1fr 1fr}
-    .segmented button.active,.display-button.active{
-      background:var(--accent-soft);border-color:var(--accent);color:var(--text);
-    }
-    .range-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-    .switchline{display:flex;align-items:center;justify-content:space-between;gap:14px;color:var(--text);font-size:15px}
-    input[type=checkbox]{width:24px;height:24px;accent-color:var(--accent);flex:0 0 auto}
-    .setting-note{font-size:12px;line-height:1.42;color:var(--muted);margin:7px 0 0}
-    .chord-panel{padding:14px 13px 13px}
-    .eyebrow{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.055em}
-    .active-chord-line{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-top:4px}
-    .active-chord{font-size:23px;font-weight:800;letter-spacing:-.02em}
-    .target-notes{text-align:right;font-size:14px;line-height:1.4;color:var(--muted)}
-    .target-notes strong{color:var(--text)}
-    .pentatonic-note{
-      display:none;margin-top:9px;padding:8px 9px;border-radius:10px;background:var(--panel-2);
-      color:var(--muted);font-size:12px;line-height:1.4;
-    }
-    .pentatonic-note.visible{display:block}
-    .chord-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
-    .chord-button{padding:7px 4px;line-height:1.08}
-    .chord-button .name{display:block;font-size:15px}
-    .chord-button .roman{display:block;font-size:11px;color:var(--muted);font-weight:650;margin-top:4px}
-    .chord-button.active{background:var(--target);border-color:var(--target);color:var(--target-text)}
-    .chord-button.active .roman{color:inherit;opacity:.82}
-    .map-panel{padding:13px 10px 12px}
-    .map-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 3px 9px}
-    .map-title{font-size:16px;font-weight:780}
-    .range-badge{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:5px 8px;white-space:nowrap}
-    .fretwrap{overflow:hidden;width:100%;max-width:560px;margin:0 auto}
-    svg{display:block;width:100%;height:auto;min-height:202px}
-    .display-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
-    .display-button{font-size:14px}
-    .legend{display:flex;flex-wrap:wrap;gap:9px 14px;margin:12px 3px 0;color:var(--muted);font-size:12px;line-height:1.3}
+    button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+    .app{max-width:720px;margin:0 auto}
+    header{margin:3px 3px 12px}
+    h1{font-size:24px;line-height:1.16;letter-spacing:-.025em;margin:0 0 4px}
+    .sub{font-size:14px;line-height:1.38;color:var(--muted);margin:0}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);margin-bottom:11px}
+    .progression-panel{padding:13px}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .section-title{font-size:15px;font-weight:780}
+    .text-button{min-height:38px;padding:6px 10px;font-size:13px;background:var(--panel-2)}
+    .progression{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
+    .step-button{padding:8px 5px;line-height:1.12;min-width:0}
+    .step-button .chord-name{display:block;font-size:18px;font-weight:800}
+    .step-button .bars{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-top:4px}
+    .step-button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .step-button.active .bars{color:inherit;opacity:.8}
+    .all-summary{margin-top:10px;padding:9px 10px;border-radius:11px;background:var(--panel-2);font-size:13px;line-height:1.45;color:var(--muted)}
+    .all-summary strong{color:var(--text)}
+    .editor{border-top:1px solid var(--border);margin-top:12px;padding-top:12px}
+    .editor-row{display:grid;grid-template-columns:30px 1fr 1.15fr .78fr;gap:7px;align-items:end;margin-bottom:9px}
+    .step-number{align-self:center;text-align:center;font-size:13px;font-weight:800;color:var(--muted)}
+    label{font-size:12px;color:var(--muted);display:block}
+    select{width:100%;margin-top:5px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);border-radius:10px;min-height:43px;padding:7px 8px;font-size:15px}
+    .settings-panel{padding:0 13px}
+    .settings-toggle{width:100%;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:space-between;text-align:left;gap:10px;min-height:47px}
+    .settings-line{display:flex;align-items:center;gap:7px;white-space:nowrap;min-width:0}
+    .settings-summary{font-size:13px;color:var(--muted);font-weight:400;overflow:hidden;text-overflow:ellipsis}
+    .chevron{color:var(--muted);transition:transform .18s ease}
+    .settings-toggle[aria-expanded="true"] .chevron{transform:rotate(180deg)}
+    .settings-body{border-top:1px solid var(--border);padding:12px 0 14px}
+    .preset-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+    .preset-grid button{font-size:13px;padding:7px 3px;min-height:42px}
+    .preset-grid button.active,.view-button.active{background:var(--accent-soft);border-color:var(--accent)}
+    .custom-range{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+    .setting-note{font-size:12px;color:var(--muted);line-height:1.4;margin:8px 0 0}
+    .map-panel{padding:12px 6px 13px}
+    .view-switch{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:0 6px 11px}
+    .map-head{padding:0 8px 8px}
+    .eyebrow{font-size:11px;color:var(--muted);font-weight:750;text-transform:uppercase;letter-spacing:.055em}
+    .map-title{font-size:20px;font-weight:820;letter-spacing:-.02em;margin-top:3px}
+    .map-instruction{font-size:13px;color:var(--muted);line-height:1.4;margin-top:4px}
+    .fretwrap{width:100%;max-width:560px;margin:0 auto;overflow:hidden}
+    svg{display:block;width:100%;height:auto;min-height:218px}
+    .legend{display:flex;flex-wrap:wrap;gap:8px 13px;margin:10px 9px 0;font-size:12px;color:var(--muted)}
     .legend-item{display:flex;align-items:center;gap:6px}
-    .legend-symbol{position:relative;width:18px;height:18px;display:inline-block;flex:0 0 auto}
-    .legend-symbol.scale::before,.legend-symbol.target::before,.legend-symbol.root::before,.legend-symbol.outside::before{
-      content:"";position:absolute;border-radius:50%;inset:3px;
-    }
-    .legend-symbol.scale::before{background:var(--scale)}
-    .legend-symbol.root::before{background:var(--scale);box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--accent)}
-    .legend-symbol.target::before{inset:1px;background:var(--target);border:2px solid var(--panel);box-shadow:0 0 0 1px var(--target)}
-    .legend-symbol.target::after{content:"";position:absolute;width:4px;height:4px;border-radius:50%;background:var(--target-text);left:7px;top:3px}
-    .legend-symbol.outside::before{inset:1px;border:2px dashed var(--outside)}
-    .legend-symbol.path::before{content:"";position:absolute;inset:2px;border:2px solid var(--path);transform:rotate(45deg);border-radius:3px}
-    .concept-note{padding:12px 13px;font-size:13px;color:var(--muted);line-height:1.48}
-    .concept-note strong{color:var(--text)}
+    .swatch{width:15px;height:15px;border-radius:50%;display:inline-block;flex:0 0 auto}
+    .swatch.pattern{background:var(--route)}
+    .swatch.chord{background:var(--chord)}
+    .swatch.root{background:transparent;border:2px solid var(--accent);box-shadow:0 0 0 2px var(--panel)}
+    .swatch.both{background:var(--common)}
+    .swatch.old{background:var(--current)}
+    .swatch.new{background:transparent;border:2px solid var(--next)}
+    .swatch.land{background:var(--common);box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--landing)}
+    .nav-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:11px 7px 0}
+    .analysis{padding:12px 13px}
+    .analysis-title{font-size:15px;font-weight:800;margin-bottom:7px}
+    .fact{font-size:14px;line-height:1.45;color:var(--muted);margin:4px 0}
+    .fact strong{color:var(--text)}
+    .hidden{display:none!important}
     .version{text-align:center;color:var(--muted);font-size:11px;margin:14px 0 0}
-    @media (max-width:420px){
-      body{padding-left:9px;padding-right:9px}
-      .map-panel{padding-left:6px;padding-right:6px}
-      .active-chord{font-size:21px}
-      .chord-grid{gap:6px}
-      .chord-button{min-height:48px}
-      .legend{gap:8px 11px}
+    @media (max-width:390px){
+      .editor-row{grid-template-columns:25px 1fr 1fr .72fr;gap:5px}
+      .editor-row select{font-size:14px;padding-left:5px;padding-right:3px}
+      .preset-grid{grid-template-columns:repeat(3,1fr)}
     }
-    @media (max-width:350px){
-      .settings-grid{grid-template-columns:1fr}
-      .full{grid-column:1}
-      .chord-grid{grid-template-columns:repeat(3,1fr)}
-      .display-button{font-size:13px;padding-left:3px;padding-right:3px}
+    @media (max-width:335px){
+      .editor-row{grid-template-columns:24px 1fr 1fr}
+      .bars-field{grid-column:2/4}
     }
-    @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+    @media (prefers-reduced-motion:reduce){*{transition:none!important}}
   </style>
 </head>
 <body>
 <main class="app">
   <header>
     <h1>Guitar Scale &amp; Chord Trainer</h1>
-    <p class="sub">Keep the scale in view. Watch the useful target notes change.</p>
+    <p class="sub">See the pathway. Keep what works. Land on the next chord.</p>
   </header>
 
-  <section class="panel settings-panel" aria-label="Scale map settings">
+  <section class="panel progression-panel" aria-labelledby="progressionTitle">
+    <div class="panel-head">
+      <div id="progressionTitle" class="section-title">Your progression</div>
+      <button id="editProgression" class="text-button" type="button" aria-expanded="false" aria-controls="progressionEditor">Edit</button>
+    </div>
+    <div id="progression" class="progression" role="group" aria-label="Progression steps"></div>
+    <div id="allSummary" class="all-summary"></div>
+    <div id="progressionEditor" class="editor hidden"></div>
+  </section>
+
+  <section class="panel settings-panel" aria-label="Neck range settings">
     <button id="settingsToggle" class="settings-toggle" type="button" aria-expanded="false" aria-controls="settingsBody">
-      <span class="settings-line">
-        <span class="settings-title">Settings</span>
-        <span id="settingsSummary" class="settings-summary">· G major · Frets 0–12</span>
-      </span>
+      <span class="settings-line"><span class="section-title">Neck area</span><span id="settingsSummary" class="settings-summary">· Frets 3–12</span></span>
       <span class="chevron" aria-hidden="true">⌄</span>
     </button>
     <div id="settingsBody" class="settings-body hidden">
-      <div class="settings-grid">
-        <label>Key<select id="keySelect" aria-label="Key"></select></label>
-        <label>Scale
-          <select id="scaleSelect" aria-label="Scale">
-            <option value="major">Major</option>
-            <option value="naturalMinor">Natural minor</option>
-            <option value="majorPentatonic">Major pentatonic</option>
-            <option value="minorPentatonic">Minor pentatonic</option>
-          </select>
-        </label>
-
-        <div class="full">
-          <div class="field-title">Fret range</div>
-          <div class="segmented range-presets" role="group" aria-label="Fret range presets">
-            <button type="button" class="range-preset active" data-min="0" data-max="12">0–12</button>
-            <button type="button" class="range-preset" data-min="5" data-max="17">5–17</button>
-            <button type="button" class="range-preset" data-min="10" data-max="22">10–22</button>
-          </div>
-          <div class="range-grid">
-            <label>First fret<select id="minFret"></select></label>
-            <label>Last fret<select id="maxFret"></select></label>
-          </div>
-          <p class="setting-note">Up to 13 consecutive fret positions are shown at once.</p>
-        </div>
-
-        <label class="full switchline">
-          <span>Show <span id="systemName">3-2</span> pathway</span>
-          <input id="showPath" type="checkbox">
-        </label>
-        <div id="positionSetting" class="full hidden">
-          <div class="field-title">Pathway position</div>
-          <div class="segmented position-buttons" role="group" aria-label="Pathway position">
-            <button type="button" class="position-button active" data-position="1">Position 1 · Low E</button>
-            <button type="button" class="position-button" data-position="2">Position 2 · A</button>
-          </div>
-          <p id="pathHelp" class="setting-note"></p>
-        </div>
+      <div id="presetGrid" class="preset-grid" role="group" aria-label="Fret range presets"></div>
+      <div class="custom-range">
+        <label>First fret<select id="minFret"></select></label>
+        <label>Last fret<select id="maxFret"></select></label>
       </div>
+      <p class="setting-note">Up to 10 fret positions are shown together so the pathway stays readable.</p>
     </div>
-  </section>
-
-  <section class="panel chord-panel" aria-labelledby="activeChordTitle">
-    <div class="eyebrow">Active chord</div>
-    <div class="active-chord-line">
-      <div id="activeChordTitle" class="active-chord">G major · I</div>
-      <div class="target-notes">Target notes<br><strong id="targetNotes">G · B · D</strong></div>
-    </div>
-    <div id="pentatonicNote" class="pentatonic-note" role="status"></div>
-    <div id="chordGrid" class="chord-grid" role="group" aria-label="Diatonic chords"></div>
   </section>
 
   <section class="panel map-panel" aria-labelledby="mapTitle">
-    <div class="map-heading">
-      <div id="mapTitle" class="map-title">G major scale</div>
-      <div id="rangeBadge" class="range-badge">Frets 0–12</div>
+    <div class="view-switch" role="group" aria-label="Map view">
+      <button class="view-button active" type="button" data-view="current">Current pattern</button>
+      <button class="view-button" type="button" data-view="transition">Transition</button>
+    </div>
+    <div class="map-head">
+      <div id="mapEyebrow" class="eyebrow">Current chord</div>
+      <div id="mapTitle" class="map-title">C major pentatonic · 3–2</div>
+      <div id="mapInstruction" class="map-instruction">Tap any outlined root to align the pathway from there.</div>
     </div>
     <div class="fretwrap">
-      <svg id="fretboard" viewBox="0 0 390 236" role="img" aria-labelledby="boardTitle boardDescription">
-        <title id="boardTitle">G major scale fretboard map</title>
-        <desc id="boardDescription">A six-string guitar fretboard showing scale notes and active chord tones.</desc>
-        <g id="boardBackground"></g>
-        <g id="inlays"></g>
-        <g id="frets"></g>
-        <g id="strings"></g>
-        <g id="pathMarkers"></g>
-        <g id="noteMarkers"></g>
-        <g id="labels"></g>
+      <svg id="fretboard" viewBox="0 0 390 246" role="img" aria-labelledby="boardTitle boardDescription">
+        <title id="boardTitle">Chord-specific pentatonic pathway</title>
+        <desc id="boardDescription">A guitar fretboard showing a diagonal pentatonic pathway.</desc>
+        <g id="boardBackground"></g><g id="inlays"></g><g id="frets"></g><g id="strings"></g>
+        <g id="routeLines"></g><g id="markers"></g><g id="labels"></g>
       </svg>
     </div>
-    <div class="display-row" role="group" aria-label="Marker labels">
-      <button type="button" class="display-button active" data-display="notes">Note names</button>
-      <button type="button" class="display-button" data-display="degrees">Scale degrees</button>
-      <button type="button" class="display-button" data-display="dots">Dots only</button>
+    <div id="legend" class="legend"></div>
+    <div class="nav-row">
+      <button id="previousChord" type="button">← Previous</button>
+      <button id="nextChord" type="button">Next →</button>
     </div>
-    <div id="legend" class="legend" aria-label="Fretboard legend"></div>
   </section>
 
-  <aside class="panel concept-note">
-    <strong id="conceptLead">The scale has not moved.</strong>
-    <span id="conceptText"> G, B, and D are emphasized because G major is the active chord.</span>
-  </aside>
+  <section class="panel analysis" aria-live="polite">
+    <div id="analysisTitle" class="analysis-title"></div>
+    <div id="analysisBody"></div>
+  </section>
 
-  <p class="version">Prototype v0.1.1</p>
+  <p class="version">Prototype v0.2</p>
 </main>
 
 <script>
 (() => {
   "use strict";
-
-  const SVG_NS = "http://www.w3.org/2000/svg";
-  const STORAGE_KEY = "guitar-scale-chord-trainer-v0.1";
-  const OPEN_STRINGS = [4, 9, 2, 7, 11, 4]; // low E to high E
-  const STRING_LABELS = ["6th E", "5th A", "4th D", "3rd G", "2nd B", "1st E"];
-  const ROMAN_BASE = ["I", "II", "III", "IV", "V", "VI", "VII"];
-
-  const SCALE_TYPES = {
-    major: {
-      label: "major",
-      family: "major",
-      intervals: [0, 2, 4, 5, 7, 9, 11],
-      degrees: ["1", "2", "3", "4", "5", "6", "7"]
-    },
-    naturalMinor: {
-      label: "natural minor",
-      family: "minor",
-      intervals: [0, 2, 3, 5, 7, 8, 10],
-      degrees: ["1", "2", "♭3", "4", "5", "♭6", "♭7"]
-    },
-    majorPentatonic: {
-      label: "major pentatonic",
-      family: "major",
-      intervals: [0, 2, 4, 7, 9],
-      degrees: ["1", "2", "3", "5", "6"]
-    },
-    minorPentatonic: {
-      label: "minor pentatonic",
-      family: "minor",
-      intervals: [0, 3, 5, 7, 10],
-      degrees: ["1", "♭3", "4", "5", "♭7"]
-    }
-  };
-
-  const MAJOR_SPELLINGS = [
-    ["C","D","E","F","G","A","B"],
-    ["D♭","E♭","F","G♭","A♭","B♭","C"],
-    ["D","E","F♯","G","A","B","C♯"],
-    ["E♭","F","G","A♭","B♭","C","D"],
-    ["E","F♯","G♯","A","B","C♯","D♯"],
-    ["F","G","A","B♭","C","D","E"],
-    ["F♯","G♯","A♯","B","C♯","D♯","E♯"],
-    ["G","A","B","C","D","E","F♯"],
-    ["A♭","B♭","C","D♭","E♭","F","G"],
-    ["A","B","C♯","D","E","F♯","G♯"],
-    ["B♭","C","D","E♭","F","G","A"],
-    ["B","C♯","D♯","E","F♯","G♯","A♯"]
+  const SVG_NS="http://www.w3.org/2000/svg";
+  const STORAGE_KEY="guitar-scale-chord-trainer-v0.2";
+  const OPEN_PITCH=[4,9,2,7,11,4];
+  const OPEN_ABS=[40,45,50,55,59,64];
+  const STRING_LABELS=["6th E","5th A","4th D","3rd G","2nd B","1st E"];
+  const ROOT_OPTIONS=["C","C♯/D♭","D","D♯/E♭","E","F","F♯/G♭","G","G♯/A♭","A","A♯/B♭","B"];
+  const PRESETS=[[0,9],[3,12],[5,14],[10,19],[13,22]];
+  const MAJOR_NAMES=[
+    ["C","D","E","F","G","A","B"],["D♭","E♭","F","G♭","A♭","B♭","C"],
+    ["D","E","F♯","G","A","B","C♯"],["E♭","F","G","A♭","B♭","C","D"],
+    ["E","F♯","G♯","A","B","C♯","D♯"],["F","G","A","B♭","C","D","E"],
+    ["F♯","G♯","A♯","B","C♯","D♯","E♯"],["G","A","B","C","D","E","F♯"],
+    ["A♭","B♭","C","D♭","E♭","F","G"],["A","B","C♯","D","E","F♯","G♯"],
+    ["B♭","C","D","E♭","F","G","A"],["B","C♯","D♯","E","F♯","G♯","A♯"]
   ];
-
-  const MINOR_SPELLINGS = [
-    ["C","D","E♭","F","G","A♭","B♭"],
-    ["C♯","D♯","E","F♯","G♯","A","B"],
-    ["D","E","F","G","A","B♭","C"],
-    ["E♭","F","G♭","A♭","B♭","C♭","D♭"],
-    ["E","F♯","G","A","B","C","D"],
-    ["F","G","A♭","B♭","C","D♭","E♭"],
-    ["F♯","G♯","A","B","C♯","D","E"],
-    ["G","A","B♭","C","D","E♭","F"],
-    ["G♯","A♯","B","C♯","D♯","E","F♯"],
-    ["A","B","C","D","E","F","G"],
-    ["B♭","C","D♭","E♭","F","G♭","A♭"],
-    ["B","C♯","D","E","F♯","G","A"]
+  const MINOR_NAMES=[
+    ["C","D","E♭","F","G","A♭","B♭"],["C♯","D♯","E","F♯","G♯","A","B"],
+    ["D","E","F","G","A","B♭","C"],["E♭","F","G♭","A♭","B♭","C♭","D♭"],
+    ["E","F♯","G","A","B","C","D"],["F","G","A♭","B♭","C","D♭","E♭"],
+    ["F♯","G♯","A","B","C♯","D","E"],["G","A","B♭","C","D","E♭","F"],
+    ["G♯","A♯","B","C♯","D♯","E","F♯"],["A","B","C","D","E","F","G"],
+    ["B♭","C","D♭","E♭","F","G♭","A♭"],["B","C♯","D","E","F♯","G","A"]
   ];
+  const MAJOR_INTERVALS=[0,2,4,5,7,9,11], MINOR_INTERVALS=[0,2,3,5,7,8,10];
+  const PENT_INTERVALS={major:[0,2,4,7,9],minor:[0,3,5,7,10]};
+  const CHORD_INTERVALS={major:[0,4,7],minor:[0,3,7]};
 
-  const ROOT_LABELS = {
-    major: ["C","D♭","D","E♭","E","F","F♯","G","A♭","A","B♭","B"],
-    minor: ["C","C♯","D","E♭","E","F","F♯","G","G♯","A","B♭","B"]
+  const state={
+    progression:[{root:0,quality:"major",bars:3},{root:4,quality:"minor",bars:1},{root:7,quality:"major",bars:1}],
+    active:0,view:"current",minFret:3,maxFret:12,anchors:[null,null,null]
   };
 
-  const state = {
-    root: 7,
-    scaleType: "major",
-    minFret: 0,
-    maxFret: 12,
-    activeDegree: 0,
-    display: "notes",
-    showPath: false,
-    pathPosition: 1
+  const $=id=>document.getElementById(id);
+  const el={
+    progression:$("progression"),allSummary:$("allSummary"),editProgression:$("editProgression"),progressionEditor:$("progressionEditor"),
+    settingsToggle:$("settingsToggle"),settingsBody:$("settingsBody"),settingsSummary:$("settingsSummary"),presetGrid:$("presetGrid"),
+    minFret:$("minFret"),maxFret:$("maxFret"),mapEyebrow:$("mapEyebrow"),mapTitle:$("mapTitle"),mapInstruction:$("mapInstruction"),
+    boardTitle:$("boardTitle"),boardDescription:$("boardDescription"),boardBackground:$("boardBackground"),inlays:$("inlays"),
+    frets:$("frets"),strings:$("strings"),routeLines:$("routeLines"),markers:$("markers"),labels:$("labels"),legend:$("legend"),
+    previousChord:$("previousChord"),nextChord:$("nextChord"),analysisTitle:$("analysisTitle"),analysisBody:$("analysisBody")
   };
 
-  const $ = id => document.getElementById(id);
-  const elements = {
-    settingsToggle: $("settingsToggle"), settingsBody: $("settingsBody"), settingsSummary: $("settingsSummary"),
-    keySelect: $("keySelect"), scaleSelect: $("scaleSelect"), minFret: $("minFret"), maxFret: $("maxFret"),
-    showPath: $("showPath"), positionSetting: $("positionSetting"), systemName: $("systemName"), pathHelp: $("pathHelp"),
-    activeChordTitle: $("activeChordTitle"), targetNotes: $("targetNotes"), pentatonicNote: $("pentatonicNote"), chordGrid: $("chordGrid"),
-    mapTitle: $("mapTitle"), rangeBadge: $("rangeBadge"), boardTitle: $("boardTitle"), boardDescription: $("boardDescription"),
-    boardBackground: $("boardBackground"), inlays: $("inlays"), frets: $("frets"), strings: $("strings"),
-    pathMarkers: $("pathMarkers"), noteMarkers: $("noteMarkers"), labels: $("labels"), legend: $("legend"),
-    conceptLead: $("conceptLead"), conceptText: $("conceptText")
-  };
-
-  function mod(n, m = 12){ return ((n % m) + m) % m; }
-  function svgElement(tag, attrs = {}, text = ""){
-    const el = document.createElementNS(SVG_NS, tag);
-    Object.entries(attrs).forEach(([name, value]) => el.setAttribute(name, String(value)));
-    if(text !== "") el.textContent = text;
-    return el;
+  function mod(n,m=12){return((n%m)+m)%m}
+  function svg(tag,attrs={},text=""){
+    const node=document.createElementNS(SVG_NS,tag);
+    Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,String(value)));
+    if(text!=="")node.textContent=text;
+    return node;
   }
-
-  function currentScale(){ return SCALE_TYPES[state.scaleType]; }
-  function family(){ return currentScale().family; }
-  function parentIntervals(){ return family() === "major" ? SCALE_TYPES.major.intervals : SCALE_TYPES.naturalMinor.intervals; }
-  function spellingTable(){ return family() === "major" ? MAJOR_SPELLINGS[state.root] : MINOR_SPELLINGS[state.root]; }
-  function rootName(){ return ROOT_LABELS[family()][state.root]; }
-  function pitchAt(stringIndex, fret){ return mod(OPEN_STRINGS[stringIndex] + fret); }
-
-  function selectedScaleData(){
-    const scale = currentScale();
-    const parent = parentIntervals();
-    const names = spellingTable();
-    return scale.intervals.map((interval, index) => {
-      const parentIndex = parent.indexOf(interval);
-      return {
-        interval,
-        pitch: mod(state.root + interval),
-        degree: scale.degrees[index],
-        name: names[parentIndex]
-      };
+  function rootName(chord){return(chord.quality==="major"?MAJOR_NAMES:MINOR_NAMES)[chord.root][0]}
+  function chordName(chord){return rootName(chord)+(chord.quality==="minor"?"m":"")}
+  function scaleName(chord){return `${rootName(chord)} ${chord.quality} pentatonic`}
+  function noteData(chord){
+    const parentIntervals=chord.quality==="major"?MAJOR_INTERVALS:MINOR_INTERVALS;
+    const names=(chord.quality==="major"?MAJOR_NAMES:MINOR_NAMES)[chord.root];
+    return PENT_INTERVALS[chord.quality].map(interval=>{
+      const parentIndex=parentIntervals.indexOf(interval);
+      return{pitch:mod(chord.root+interval),interval,name:names[parentIndex]};
     });
   }
-
-  function triadQuality(rootPitch, thirdPitch, fifthPitch){
-    const third = mod(thirdPitch - rootPitch);
-    const fifth = mod(fifthPitch - rootPitch);
-    if(third === 4 && fifth === 7) return {label:"major", symbol:"", romanCase:"upper"};
-    if(third === 3 && fifth === 7) return {label:"minor", symbol:"m", romanCase:"lower"};
-    if(third === 3 && fifth === 6) return {label:"diminished", symbol:"dim", romanCase:"lower", diminished:true};
-    return {label:"triad", symbol:"", romanCase:"upper"};
-  }
-
-  function diatonicChords(){
-    const intervals = parentIntervals();
-    const names = spellingTable();
-    return intervals.map((interval, degree) => {
-      const indices = [degree, degree + 2, degree + 4].map(i => i % 7);
-      const pitches = indices.map(i => mod(state.root + intervals[i]));
-      const quality = triadQuality(...pitches);
-      let roman = ROMAN_BASE[degree];
-      if(quality.romanCase === "lower") roman = roman.toLowerCase();
-      if(quality.diminished) roman += "°";
-      return {
-        degree,
-        rootPitch: pitches[0],
-        pitches,
-        toneNames: indices.map(i => names[i]),
-        quality,
-        name: names[degree] + quality.symbol,
-        spokenName: names[degree] + " " + quality.label,
-        roman
-      };
+  function chordToneData(chord){
+    const parentIntervals=chord.quality==="major"?MAJOR_INTERVALS:MINOR_INTERVALS;
+    const names=(chord.quality==="major"?MAJOR_NAMES:MINOR_NAMES)[chord.root];
+    return CHORD_INTERVALS[chord.quality].map(interval=>{
+      const parentIndex=parentIntervals.indexOf(interval);
+      return{pitch:mod(chord.root+interval),name:names[parentIndex]};
     });
   }
-
-  function activeChord(){ return diatonicChords()[state.activeDegree]; }
-
-  function degreeDataForPitch(pitch){
-    return selectedScaleData().find(note => note.pitch === pitch) || null;
+  function pitchAt(stringIndex,fret){return mod(OPEN_PITCH[stringIndex]+fret)}
+  function pitchSet(items){return new Set(items.map(item=>item.pitch))}
+  function intersection(sets){
+    if(!sets.length)return new Set();
+    return new Set([...sets[0]].filter(value=>sets.slice(1).every(set=>set.has(value))));
+  }
+  function difference(a,b){return new Set([...a].filter(value=>!b.has(value)))}
+  function formatList(names){
+    if(!names.length)return"none";
+    if(names.length===1)return names[0];
+    if(names.length===2)return `${names[0]} and ${names[1]}`;
+    return `${names.slice(0,-1).join(", ")}, and ${names[names.length-1]}`;
+  }
+  function namePitches(pitches,contextChord){
+    const contextual=new Map(noteData(contextChord).map(note=>[note.pitch,note.name]));
+    chordToneData(contextChord).forEach(note=>contextual.set(note.pitch,note.name));
+    return [...pitches].sort((a,b)=>mod(a-contextChord.root)-mod(b-contextChord.root)).map(pitch=>contextual.get(pitch)||ROOT_OPTIONS[pitch]);
   }
 
-  function pentatonicPathPitchSet(){
-    const intervals = family() === "major" ? SCALE_TYPES.majorPentatonic.intervals : SCALE_TYPES.minorPentatonic.intervals;
-    return new Set(intervals.map(i => mod(state.root + i)));
-  }
-
-  function isPathPosition(stringIndex, pitch){
-    if(!state.showPath) return false;
-    const startString = state.pathPosition === 1 ? 0 : 1;
-    if(stringIndex < startString) return false;
-    const offset = stringIndex - startString;
-    const interval = mod(pitch - state.root);
-    if(family() === "major"){
-      return offset % 2 === 0 ? [0,2,4].includes(interval) : [7,9].includes(interval);
-    }
-    return offset % 2 === 0 ? [10,0].includes(interval) : [3,5,7].includes(interval);
-  }
-
-  function rebuildKeyOptions(){
-    const selectedRoot = state.root;
-    elements.keySelect.innerHTML = "";
-    ROOT_LABELS[family()].forEach((name, pitch) => {
-      const option = document.createElement("option");
-      option.value = String(pitch);
-      option.textContent = name;
-      elements.keySelect.appendChild(option);
-    });
-    elements.keySelect.value = String(selectedRoot);
-  }
-
-  function buildFretOptions(){
-    [elements.minFret, elements.maxFret].forEach(select => {
-      select.innerHTML = "";
-      for(let fret = 0; fret <= 22; fret++){
-        const option = document.createElement("option");
-        option.value = String(fret);
-        option.textContent = String(fret);
-        select.appendChild(option);
+  function rootAnchors(chord){
+    const anchors=[];
+    for(let s=0;s<6;s++){
+      for(let f=state.minFret;f<=state.maxFret;f++){
+        if(pitchAt(s,f)===chord.root)anchors.push({s,f});
       }
-    });
-  }
-
-  function normalizeRange(changed){
-    state.minFret = Math.max(0, Math.min(22, Number(state.minFret)));
-    state.maxFret = Math.max(0, Math.min(22, Number(state.maxFret)));
-    if(state.minFret > state.maxFret){
-      if(changed === "min") state.maxFret = state.minFret;
-      else state.minFret = state.maxFret;
     }
-    if(state.maxFret - state.minFret > 12){
-      if(changed === "min") state.maxFret = Math.min(22, state.minFret + 12);
-      else state.minFret = Math.max(0, state.maxFret - 12);
-    }
+    return anchors;
   }
-
-  function loadState(){
-    try{
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if(!saved || typeof saved !== "object") return;
-      if(Number.isInteger(saved.root) && saved.root >= 0 && saved.root < 12) state.root = saved.root;
-      if(SCALE_TYPES[saved.scaleType]) state.scaleType = saved.scaleType;
-      if(Number.isInteger(saved.minFret)) state.minFret = saved.minFret;
-      if(Number.isInteger(saved.maxFret)) state.maxFret = saved.maxFret;
-      if(Number.isInteger(saved.activeDegree) && saved.activeDegree >= 0 && saved.activeDegree < 7) state.activeDegree = saved.activeDegree;
-      if(["notes","degrees","dots"].includes(saved.display)) state.display = saved.display;
-      if(typeof saved.showPath === "boolean") state.showPath = saved.showPath;
-      if(saved.pathPosition === 1 || saved.pathPosition === 2) state.pathPosition = saved.pathPosition;
-      normalizeRange("max");
-    }catch(error){ /* Invalid saved state safely falls back to defaults. */ }
-  }
-
-  function saveState(){
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(error){ /* Storage may be unavailable. */ }
-  }
-
-  function syncControls(){
-    elements.scaleSelect.value = state.scaleType;
-    elements.minFret.value = String(state.minFret);
-    elements.maxFret.value = String(state.maxFret);
-    elements.showPath.checked = state.showPath;
-    elements.positionSetting.classList.toggle("hidden", !state.showPath);
-    document.querySelectorAll(".range-preset").forEach(button => {
-      button.classList.toggle("active", Number(button.dataset.min) === state.minFret && Number(button.dataset.max) === state.maxFret);
-    });
-    document.querySelectorAll(".position-button").forEach(button => {
-      button.classList.toggle("active", Number(button.dataset.position) === state.pathPosition);
-    });
-    document.querySelectorAll(".display-button").forEach(button => {
-      button.classList.toggle("active", button.dataset.display === state.display);
-    });
-    const system = family() === "major" ? "3-2" : "2-3";
-    elements.systemName.textContent = system;
-    elements.pathHelp.textContent = state.pathPosition === 1
-      ? `${system} Position 1 begins on the low E string.`
-      : `${system} Position 2 begins on the A string.`;
-  }
-
-  function updateSummary(){
-    const path = state.showPath ? ` · ${family() === "major" ? "3-2" : "2-3"} P${state.pathPosition}` : "";
-    elements.settingsSummary.textContent = `· ${rootName()} ${currentScale().label} · Frets ${state.minFret}–${state.maxFret}${path}`;
-  }
-
-  function renderChordControls(){
-    const chords = diatonicChords();
-    const chord = chords[state.activeDegree];
-    elements.chordGrid.innerHTML = "";
-    chords.forEach(item => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "chord-button" + (item.degree === state.activeDegree ? " active" : "");
-      button.dataset.degree = String(item.degree);
-      button.setAttribute("aria-pressed", String(item.degree === state.activeDegree));
-      button.setAttribute("aria-label", `${item.spokenName}, ${item.roman}`);
-      const name = document.createElement("span");
-      name.className = "name";
-      name.textContent = item.name;
-      const roman = document.createElement("span");
-      roman.className = "roman";
-      roman.textContent = item.roman;
-      button.append(name, roman);
-      button.addEventListener("click", () => {
-        state.activeDegree = item.degree;
-        saveState();
-        render();
+  function sameAnchor(a,b){return Boolean(a&&b&&a.s===b.s&&a.f===b.f)}
+  function buildPath(chord,anchor){
+    if(!anchor)return[];
+    const anchorAbs=OPEN_ABS[anchor.s]+anchor.f;
+    const positions=[];
+    for(let s=0;s<6;s++){
+      const delta=s-anchor.s;
+      const pair=Math.floor(delta/2);
+      const even=mod(delta,2)===0;
+      const offsets=chord.quality==="major"
+        ?(even?[0,2,4]:[7,9])
+        :(even?[-2,0]:[3,5,7]);
+      offsets.forEach(offset=>{
+        const absolute=anchorAbs+pair*12+offset;
+        const fret=absolute-OPEN_ABS[s];
+        if(fret>=state.minFret&&fret<=state.maxFret&&fret>=0&&fret<=22){
+          positions.push({s,f:fret,pitch:mod(absolute),absolute});
+        }
       });
-      elements.chordGrid.appendChild(button);
-    });
-
-    elements.activeChordTitle.textContent = `${chord.spokenName} · ${chord.roman}`;
-    elements.targetNotes.textContent = chord.toneNames.join(" · ");
-
-    const selectedPitches = new Set(selectedScaleData().map(note => note.pitch));
-    const outsideNames = chord.toneNames.filter((name, index) => !selectedPitches.has(chord.pitches[index]));
-    const isPentatonic = currentScale().intervals.length === 5;
-    elements.pentatonicNote.classList.toggle("visible", isPentatonic && outsideNames.length > 0);
-    elements.pentatonicNote.textContent = outsideNames.length === 1
-      ? `${outsideNames[0]} is a chord tone outside this pentatonic scale. It appears as a dashed hollow target.`
-      : outsideNames.length > 1
-        ? `${outsideNames.join(" and ")} are chord tones outside this pentatonic scale. They appear as dashed hollow targets.`
-        : "";
-
-    elements.conceptLead.textContent = "The scale has not moved.";
-    elements.conceptText.textContent = ` ${chord.toneNames.join(", ")} are emphasized because ${chord.spokenName} is the active chord.`;
+    }
+    return positions.sort((a,b)=>a.absolute-b.absolute||a.s-b.s);
   }
+  function chooseAnchor(chord){
+    const anchors=rootAnchors(chord);
+    const center=(state.minFret+state.maxFret)/2;
+    return anchors.sort((a,b)=>{
+      const countDiff=buildPath(chord,b).length-buildPath(chord,a).length;
+      if(countDiff)return countDiff;
+      const stringDiff=a.s-b.s;
+      if(stringDiff)return stringDiff;
+      return Math.abs(a.f-center)-Math.abs(b.f-center);
+    })[0]||null;
+  }
+  function activeAnchor(index){
+    const chord=state.progression[index];
+    const saved=state.anchors[index];
+    const valid=saved&&rootAnchors(chord).some(anchor=>sameAnchor(anchor,saved));
+    if(valid)return saved;
+    state.anchors[index]=chooseAnchor(chord);
+    return state.anchors[index];
+  }
+  function keyFor(position){return `${position.s}-${position.f}`}
 
-  function drawFretboard(){
-    [elements.boardBackground,elements.inlays,elements.frets,elements.strings,elements.pathMarkers,elements.noteMarkers,elements.labels]
-      .forEach(group => group.innerHTML = "");
-
-    const left = 34, right = 382, top = 28, height = 156;
-    const positions = state.maxFret - state.minFret + 1;
-    const width = right - left;
-    const colWidth = width / positions;
-    const stringGap = height / 5;
-    const scaleData = selectedScaleData();
-    const scaleByPitch = new Map(scaleData.map(note => [note.pitch, note]));
-    const chord = activeChord();
-    const chordPitchSet = new Set(chord.pitches);
-    const selectedPitchSet = new Set(scaleData.map(note => note.pitch));
-
-    elements.boardBackground.appendChild(svgElement("rect", {
-      x:left, y:top, width, height, rx:8, fill:"var(--panel-2)", stroke:"var(--border)", "stroke-width":1
-    }));
-
-    for(let boundary = 0; boundary <= positions; boundary++){
-      const x = left + boundary * colWidth;
-      const fretAtRight = state.minFret + boundary;
-      const isNut = state.minFret === 0 && fretAtRight === 1;
-      elements.frets.appendChild(svgElement("line", {
-        x1:x, x2:x, y1:top, y2:top + height,
-        stroke:isNut ? "var(--text)" : "var(--fret)", "stroke-width":isNut ? 4 : 1.25
-      }));
-    }
-
-    for(let stringIndex = 0; stringIndex < 6; stringIndex++){
-      const y = top + (5 - stringIndex) * stringGap;
-      elements.strings.appendChild(svgElement("line", {
-        x1:left, x2:right, y1:y, y2:y, stroke:"var(--text)", "stroke-width":1 + (5 - stringIndex) * .34, opacity:.88
-      }));
-    }
-
-    const markerFrets = [3,5,7,9,12,15,17,19,21];
-    markerFrets.filter(fret => fret >= state.minFret && fret <= state.maxFret).forEach(fret => {
-      const x = left + (fret - state.minFret + .5) * colWidth;
-      const ys = fret === 12 ? [top + height * .36, top + height * .64] : [top + height / 2];
-      ys.forEach(y => elements.inlays.appendChild(svgElement("circle", {cx:x,cy:y,r:3.1,fill:"var(--muted)",opacity:.22})));
-    });
-
-    for(let fret = state.minFret; fret <= state.maxFret; fret++){
-      const x = left + (fret - state.minFret + .5) * colWidth;
-      elements.labels.appendChild(svgElement("text", {
-        x, y:208, "text-anchor":"middle", "font-size":9, fill:"var(--muted)"
-      }, String(fret)));
-    }
-
-    STRING_LABELS.forEach((label, stringIndex) => {
-      const y = top + (5 - stringIndex) * stringGap + 4;
-      elements.labels.appendChild(svgElement("text", {
-        x:30, y:y+3, "text-anchor":"end", "font-size":8.2, fill:"var(--muted)"
-      }, label));
-    });
-
-    function markerX(fret){ return left + (fret - state.minFret + .5) * colWidth; }
-    function markerY(stringIndex){ return top + (5 - stringIndex) * stringGap; }
-
-    for(let stringIndex = 0; stringIndex < 6; stringIndex++){
-      for(let fret = state.minFret; fret <= state.maxFret; fret++){
-        const pitch = pitchAt(stringIndex, fret);
-        const scaleNote = scaleByPitch.get(pitch) || null;
-        const isChordTone = chordPitchSet.has(pitch);
-        if(!scaleNote && !isChordTone) continue;
-
-        const x = markerX(fret), y = markerY(stringIndex);
-        const isScaleRoot = pitch === state.root && Boolean(scaleNote);
-        const isChordRoot = pitch === chord.rootPitch;
-        const isOutside = isChordTone && !selectedPitchSet.has(pitch);
-        const inPath = Boolean(scaleNote) && isPathPosition(stringIndex, pitch) && pentatonicPathPitchSet().has(pitch);
-
-        if(inPath){
-          elements.pathMarkers.appendChild(svgElement("rect", {
-            x:x-8.8, y:y-8.8, width:17.6, height:17.6, rx:2.6,
-            fill:"none", stroke:"var(--path)", "stroke-width":1.7,
-            transform:`rotate(45 ${x} ${y})`
-          }));
-        }
-
-        if(isOutside){
-          elements.noteMarkers.appendChild(svgElement("circle", {
-            cx:x, cy:y, r:8.2, fill:"var(--panel-2)", stroke:"var(--outside)", "stroke-width":1.8, "stroke-dasharray":"3 2"
-          }));
-          if(isChordRoot){
-            elements.noteMarkers.appendChild(svgElement("circle", {
-              cx:x, cy:y-5.6, r:1.7, fill:"var(--outside)", opacity:.96
-            }));
-          }
-        }else{
-          const radius = isChordTone ? 8.7 : 6.3;
-          if(isScaleRoot){
-            elements.noteMarkers.appendChild(svgElement("circle", {
-              cx:x, cy:y, r:radius+2.8, fill:"var(--panel-2)", stroke:"var(--accent)", "stroke-width":1.7
-            }));
-          }
-          elements.noteMarkers.appendChild(svgElement("circle", {
-            cx:x, cy:y, r:radius,
-            fill:isChordTone ? "var(--target)" : "var(--scale)",
-            stroke:isChordTone ? "var(--panel)" : "none", "stroke-width":isChordTone ? 1.5 : 0
-          }));
-          if(isChordRoot){
-            elements.noteMarkers.appendChild(svgElement("circle", {
-              cx:x, cy:y-5.6, r:1.7, fill:"var(--target-text)", opacity:.96
-            }));
-          }
-        }
-
-        if(state.display !== "dots"){
-          let text = "";
-          if(scaleNote){
-            text = state.display === "notes" ? scaleNote.name : scaleNote.degree;
-          }else if(isOutside){
-            const chordIndex = chord.pitches.indexOf(pitch);
-            text = state.display === "notes" ? chord.toneNames[chordIndex] : "•";
-          }
-          const fontSize = text.length >= 2 ? 7.2 : 8.2;
-          elements.noteMarkers.appendChild(svgElement("text", {
-            x, y:y+2.8, "text-anchor":"middle", "font-size":fontSize, "font-weight":760,
-            fill:isOutside ? "var(--outside)" : (isChordTone ? "var(--target-text)" : "var(--scale-text)"),
-            "pointer-events":"none"
-          }, text));
-        }
+  function load(){
+    try{
+      const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if(!saved||typeof saved!=="object")return;
+      if(Array.isArray(saved.progression)&&saved.progression.length===3){
+        const valid=saved.progression.every(chord=>Number.isInteger(chord.root)&&chord.root>=0&&chord.root<12&&["major","minor"].includes(chord.quality)&&Number.isInteger(chord.bars)&&chord.bars>=1&&chord.bars<=8);
+        if(valid)state.progression=saved.progression;
       }
-    }
-
-    const scaleLabel = `${rootName()} ${currentScale().label}`;
-    elements.mapTitle.textContent = `${scaleLabel} scale`;
-    elements.rangeBadge.textContent = `Frets ${state.minFret}–${state.maxFret}`;
-    elements.boardTitle.textContent = `${scaleLabel} fretboard map`;
-    elements.boardDescription.textContent = `A six-string guitar fretboard from fret ${state.minFret} through ${state.maxFret}. ${activeChord().toneNames.join(", ")} are emphasized as tones of the active ${activeChord().spokenName} chord.`;
+      if(Number.isInteger(saved.active)&&saved.active>=0&&saved.active<3)state.active=saved.active;
+      if(["current","transition"].includes(saved.view))state.view=saved.view;
+      if(Number.isInteger(saved.minFret))state.minFret=saved.minFret;
+      if(Number.isInteger(saved.maxFret))state.maxFret=saved.maxFret;
+      if(Array.isArray(saved.anchors)&&saved.anchors.length===3)state.anchors=saved.anchors;
+      normalizeRange("max");
+    }catch(error){/* Safely retain defaults. */}
+  }
+  function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(error){}}
+  function normalizeRange(changed){
+    state.minFret=Math.max(0,Math.min(22,Number(state.minFret)));
+    state.maxFret=Math.max(0,Math.min(22,Number(state.maxFret)));
+    if(state.minFret>state.maxFret){if(changed==="min")state.maxFret=state.minFret;else state.minFret=state.maxFret}
+    if(state.maxFret-state.minFret>9){if(changed==="min")state.maxFret=Math.min(22,state.minFret+9);else state.minFret=Math.max(0,state.maxFret-9)}
   }
 
-  function renderLegend(){
-    const items = [
-      ["scale", "Scale tone"],
-      ["root", "Scale root"],
-      ["target", "Chord tone · dot marks chord root"],
-      ["outside", "Chord tone outside scale"]
-    ];
-    if(state.showPath) items.push(["path", `${family() === "major" ? "3-2" : "2-3"} pathway`]);
-    elements.legend.innerHTML = "";
-    items.forEach(([type,label]) => {
-      const item = document.createElement("span");
-      item.className = "legend-item";
-      const symbol = document.createElement("span");
-      symbol.className = `legend-symbol ${type}`;
-      symbol.setAttribute("aria-hidden", "true");
-      item.append(symbol, document.createTextNode(label));
-      elements.legend.appendChild(item);
+  function buildSelectOptions(select,options,value){
+    select.innerHTML="";
+    options.forEach(optionData=>{
+      const option=document.createElement("option");
+      option.value=String(optionData.value);option.textContent=optionData.label;select.appendChild(option);
+    });
+    select.value=String(value);
+  }
+  function buildEditors(){
+    el.progressionEditor.innerHTML="";
+    state.progression.forEach((chord,index)=>{
+      const row=document.createElement("div");row.className="editor-row";
+      const number=document.createElement("div");number.className="step-number";number.textContent=String(index+1);
+      const rootLabel=document.createElement("label");rootLabel.textContent="Root";
+      const rootSelect=document.createElement("select");rootSelect.setAttribute("aria-label",`Step ${index+1} root`);
+      buildSelectOptions(rootSelect,ROOT_OPTIONS.map((label,value)=>({label,value})),chord.root);
+      rootLabel.appendChild(rootSelect);
+      const qualityLabel=document.createElement("label");qualityLabel.textContent="Quality";
+      const qualitySelect=document.createElement("select");qualitySelect.setAttribute("aria-label",`Step ${index+1} quality`);
+      buildSelectOptions(qualitySelect,[{label:"Major",value:"major"},{label:"Minor",value:"minor"}],chord.quality);
+      qualityLabel.appendChild(qualitySelect);
+      const barsLabel=document.createElement("label");barsLabel.className="bars-field";barsLabel.textContent="Bars";
+      const barsSelect=document.createElement("select");barsSelect.setAttribute("aria-label",`Step ${index+1} bars`);
+      buildSelectOptions(barsSelect,Array.from({length:8},(_,i)=>({label:String(i+1),value:i+1})),chord.bars);
+      barsLabel.appendChild(barsSelect);
+      rootSelect.addEventListener("change",()=>{chord.root=Number(rootSelect.value);state.anchors[index]=null;save();render()});
+      qualitySelect.addEventListener("change",()=>{chord.quality=qualitySelect.value;state.anchors[index]=null;save();render()});
+      barsSelect.addEventListener("change",()=>{chord.bars=Number(barsSelect.value);save();renderProgression();renderAnalysis()});
+      row.append(number,rootLabel,qualityLabel,barsLabel);el.progressionEditor.appendChild(row);
     });
   }
+  function renderProgression(){
+    el.progression.innerHTML="";
+    state.progression.forEach((chord,index)=>{
+      const button=document.createElement("button");button.type="button";button.className="step-button"+(index===state.active?" active":"");
+      button.setAttribute("aria-pressed",String(index===state.active));
+      button.setAttribute("aria-label",`${chordName(chord)}, ${chord.bars} ${chord.bars===1?"bar":"bars"}`);
+      const name=document.createElement("span");name.className="chord-name";name.textContent=chordName(chord);
+      const bars=document.createElement("span");bars.className="bars";bars.textContent=`${chord.bars} ${chord.bars===1?"bar":"bars"}`;
+      button.append(name,bars);button.addEventListener("click",()=>{state.active=index;save();render()});el.progression.appendChild(button);
+    });
+    const allScale=intersection(state.progression.map(chord=>pitchSet(noteData(chord))));
+    const allChord=intersection(state.progression.map(chord=>pitchSet(chordToneData(chord))));
+    const scaleNames=namePitches(allScale,state.progression[0]);
+    const chordNames=namePitches(allChord,state.progression[0]);
+    el.allSummary.innerHTML=`<strong>Across all three patterns:</strong> ${formatList(scaleNames)}<br><strong>Chord tones shared by all:</strong> ${formatList(chordNames)}`;
+  }
+  function buildRangeControls(){
+    const options=Array.from({length:23},(_,value)=>({label:String(value),value}));
+    buildSelectOptions(el.minFret,options,state.minFret);buildSelectOptions(el.maxFret,options,state.maxFret);
+    el.presetGrid.innerHTML="";
+    PRESETS.forEach(([min,max])=>{
+      const button=document.createElement("button");button.type="button";button.textContent=`${min}–${max}`;
+      button.classList.toggle("active",min===state.minFret&&max===state.maxFret);
+      button.addEventListener("click",()=>{state.minFret=min;state.maxFret=max;state.anchors=[null,null,null];save();render()});
+      el.presetGrid.appendChild(button);
+    });
+    el.settingsSummary.textContent=`· Frets ${state.minFret}–${state.maxFret}`;
+  }
 
+  function drawBoardBase(){
+    [el.boardBackground,el.inlays,el.frets,el.strings,el.routeLines,el.markers,el.labels].forEach(group=>group.innerHTML="");
+    const left=34,right=382,top=31,height=154,positions=state.maxFret-state.minFret+1,width=right-left,column=width/positions,gap=height/5;
+    el.boardBackground.appendChild(svg("rect",{x:left,y:top,width,height,rx:8,fill:"var(--panel-2)",stroke:"var(--border)","stroke-width":1}));
+    for(let boundary=0;boundary<=positions;boundary++){
+      const x=left+boundary*column;const rightFret=state.minFret+boundary;const nut=state.minFret===0&&rightFret===1;
+      el.frets.appendChild(svg("line",{x1:x,x2:x,y1:top,y2:top+height,stroke:nut?"var(--text)":"var(--line)","stroke-width":nut?3.2:1.15}));
+    }
+    for(let s=0;s<6;s++){
+      const y=top+(5-s)*gap;el.strings.appendChild(svg("line",{x1:left,x2:right,y1:y,y2:y,stroke:"var(--text)","stroke-width":1+(5-s)*.3,opacity:.86}));
+      el.labels.appendChild(svg("text",{x:30,y:y+3,"text-anchor":"end","font-size":8.2,fill:"var(--muted)"},STRING_LABELS[s]));
+    }
+    [3,5,7,9,12,15,17,19,21].filter(f=>f>=state.minFret&&f<=state.maxFret).forEach(fret=>{
+      const x=left+(fret-state.minFret+.5)*column;const ys=fret===12?[top+height*.36,top+height*.64]:[top+height/2];
+      ys.forEach(y=>el.inlays.appendChild(svg("circle",{cx:x,cy:y,r:3,fill:"var(--muted)",opacity:.2})));
+    });
+    for(let fret=state.minFret;fret<=state.maxFret;fret++){
+      const x=left+(fret-state.minFret+.5)*column;el.labels.appendChild(svg("text",{x,y:210,"text-anchor":"middle","font-size":9,fill:"var(--muted)"},String(fret)));
+    }
+    return{xFor:fret=>left+(fret-state.minFret+.5)*column,yFor:s=>top+(5-s)*gap};
+  }
+  function pathPoints(path,geometry){return path.map(pos=>`${geometry.xFor(pos.f)},${geometry.yFor(pos.s)}`).join(" ")}
+  function addMarker(position,geometry,style,label,extra={}){
+    const x=geometry.xFor(position.f),y=geometry.yFor(position.s);const group=svg("g",{});
+    if(extra.outer){group.appendChild(svg("circle",{cx:x,cy:y,r:extra.outer,fill:"var(--panel-2)",stroke:extra.outerColor||"var(--accent)","stroke-width":extra.outerWidth||1.8}))}
+    group.appendChild(svg("circle",{cx:x,cy:y,r:style.r||8,fill:style.fill||"var(--panel)",stroke:style.stroke||"none","stroke-width":style.strokeWidth||0,opacity:style.opacity??1}));
+    if(label)group.appendChild(svg("text",{x,y:y+2.8,"text-anchor":"middle","font-size":label.length>1?7.1:8.2,"font-weight":780,fill:style.text||"var(--text)","pointer-events":"none"},label));
+    el.markers.appendChild(group);return group;
+  }
+  function makeAnchorInteractive(group,anchor,index){
+    group.setAttribute("role","button");group.setAttribute("tabindex","0");group.setAttribute("aria-label",`Use ${chordName(state.progression[index])} root on ${STRING_LABELS[anchor.s]}, fret ${anchor.f}`);
+    const choose=()=>{state.anchors[index]={s:anchor.s,f:anchor.f};save();render()};
+    group.addEventListener("click",choose);group.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();choose()}});
+  }
+  function drawCurrent(){
+    const chord=state.progression[state.active],anchor=activeAnchor(state.active),path=buildPath(chord,anchor),geometry=drawBoardBase();
+    if(path.length>1)el.routeLines.appendChild(svg("polyline",{points:pathPoints(path,geometry),fill:"none",stroke:"var(--route)","stroke-width":2.1,"stroke-linecap":"round","stroke-linejoin":"round",opacity:.62}));
+    const tones=pitchSet(chordToneData(chord));const pathKeys=new Set(path.map(keyFor));const names=new Map(noteData(chord).map(note=>[note.pitch,note.name]));
+    path.forEach(position=>{
+      const isTone=tones.has(position.pitch);const isRoot=position.pitch===chord.root;
+      addMarker(position,geometry,{r:isTone?8.7:7.6,fill:isTone?"var(--chord)":"var(--route)",stroke:isTone?"var(--panel)":"none",strokeWidth:isTone?1.4:0,text:isTone?"var(--chord-text)":"#fff"},names.get(position.pitch),isRoot?{outer:11.6,outerColor:"var(--accent)",outerWidth:1.8}:{});
+    });
+    rootAnchors(chord).forEach(root=>{
+      const selected=sameAnchor(root,anchor);const onPath=pathKeys.has(keyFor(root));
+      if(onPath&&selected){
+        const x=geometry.xFor(root.f),y=geometry.yFor(root.s);el.markers.appendChild(svg("path",{d:`M ${x} ${y-15} l -3.5 -5 h 7 z`,fill:"var(--accent)"}));return;
+      }
+      if(onPath&&!selected){
+        const x=geometry.xFor(root.f),y=geometry.yFor(root.s);const hit=svg("circle",{cx:x,cy:y,r:12.5,fill:"transparent",stroke:"var(--accent)","stroke-width":1.4,"stroke-dasharray":"2 2"});
+        makeAnchorInteractive(hit,root,state.active);el.markers.appendChild(hit);return;
+      }
+      const group=addMarker(root,geometry,{r:8,fill:"var(--panel-2)",stroke:"var(--accent)",strokeWidth:1.8,text:"var(--accent)"},rootName(chord));
+      makeAnchorInteractive(group,root,state.active);
+    });
+    el.mapEyebrow.textContent="Current chord";el.mapTitle.textContent=`${scaleName(chord)} · ${chord.quality==="major"?"3–2":"2–3"}`;
+    el.mapInstruction.textContent="Tap any outlined root to align the pathway from there.";
+    el.boardTitle.textContent=`${scaleName(chord)} pathway`;el.boardDescription.textContent=`A diagonal ${chord.quality==="major"?"3-2":"2-3"} pathway for ${chordName(chord)} from frets ${state.minFret} through ${state.maxFret}.`;
+  }
+  function drawTransition(){
+    const currentIndex=state.active,nextIndex=(state.active+1)%3,current=state.progression[currentIndex],next=state.progression[nextIndex];
+    const currentPath=buildPath(current,activeAnchor(currentIndex)),nextPath=buildPath(next,activeAnchor(nextIndex)),geometry=drawBoardBase();
+    if(currentPath.length>1)el.routeLines.appendChild(svg("polyline",{points:pathPoints(currentPath,geometry),fill:"none",stroke:"var(--current)","stroke-width":1.8,"stroke-linecap":"round",opacity:.5}));
+    if(nextPath.length>1)el.routeLines.appendChild(svg("polyline",{points:pathPoints(nextPath,geometry),fill:"none",stroke:"var(--next)","stroke-width":1.8,"stroke-dasharray":"4 3","stroke-linecap":"round",opacity:.7}));
+    const currentMap=new Map(currentPath.map(position=>[keyFor(position),position])),nextMap=new Map(nextPath.map(position=>[keyFor(position),position]));
+    const sharedTones=intersection([pitchSet(chordToneData(current)),pitchSet(chordToneData(next))]);
+    const names=new Map([...noteData(current),...noteData(next)].map(note=>[note.pitch,note.name]));
+    const keys=new Set([...currentMap.keys(),...nextMap.keys()]);
+    keys.forEach(key=>{
+      const oldPos=currentMap.get(key),newPos=nextMap.get(key),position=oldPos||newPos;const both=Boolean(oldPos&&newPos);const landing=sharedTones.has(position.pitch)&&(both||newPos);
+      const style=both?{r:8.4,fill:"var(--common)",text:"#fff"}:oldPos?{r:7,fill:"var(--current)",text:"#fff",opacity:.72}:{r:7.7,fill:"var(--panel-2)",stroke:"var(--next)",strokeWidth:1.9,text:"var(--next)"};
+      addMarker(position,geometry,style,names.get(position.pitch)||ROOT_OPTIONS[position.pitch],landing?{outer:11.6,outerColor:"var(--landing)",outerWidth:1.8}:{});
+    });
+    el.mapEyebrow.textContent="Transition";el.mapTitle.textContent=`${chordName(current)} → ${chordName(next)}${nextIndex===0?" · loop":""}`;
+    el.mapInstruction.textContent="Solid teal positions are already present in both selected pathways.";
+    el.boardTitle.textContent=`Transition from ${chordName(current)} to ${chordName(next)}`;el.boardDescription.textContent=`An overlay comparing the selected ${chordName(current)} and ${chordName(next)} pentatonic pathways.`;
+  }
+  function renderLegend(){
+    const items=state.view==="current"?[["pattern","Pattern note"],["chord","Chord tone"],["root","Root anchor"]]:[["both","Same position"],["old","Current only"],["new","Next only"],["land","Shared chord tone"]];
+    el.legend.innerHTML="";items.forEach(([type,label])=>{const item=document.createElement("span");item.className="legend-item";const swatch=document.createElement("span");swatch.className=`swatch ${type}`;item.append(swatch,document.createTextNode(label));el.legend.appendChild(item)});
+  }
+  function renderAnalysis(){
+    const current=state.progression[state.active],next=state.progression[(state.active+1)%3];
+    if(state.view==="current"){
+      el.analysisTitle.textContent=`Inside ${chordName(current)}`;
+      const scaleNames=noteData(current).map(note=>note.name),toneNames=chordToneData(current).map(note=>note.name);
+      el.analysisBody.innerHTML=`<p class="fact"><strong>Pattern notes:</strong> ${scaleNames.join(" · ")}</p><p class="fact"><strong>Chord tones:</strong> ${toneNames.join(" · ")}</p><p class="fact">Start from any outlined ${rootName(current)} and follow the connected route. The orange notes are your strongest chord targets.</p>`;
+      return;
+    }
+    const currentScale=pitchSet(noteData(current)),nextScale=pitchSet(noteData(next));
+    const common=intersection([currentScale,nextScale]),sharedTones=intersection([pitchSet(chordToneData(current)),pitchSet(chordToneData(next))]);
+    const leaving=difference(currentScale,nextScale),entering=difference(nextScale,currentScale);
+    const suffix=(state.active+1)%3===0?" as the progression loops":"";
+    el.analysisTitle.textContent=`Moving from ${chordName(current)} to ${chordName(next)}${suffix}`;
+    el.analysisBody.innerHTML=`<p class="fact"><strong>Works in both patterns:</strong> ${formatList(namePitches(common,current))}</p><p class="fact"><strong>Strong landing notes:</strong> ${formatList(namePitches(sharedTones,next))}</p><p class="fact"><strong>Pattern change:</strong> ${formatList(namePitches(leaving,current))} leaves; ${formatList(namePitches(entering,next))} enters.</p>`;
+  }
   function render(){
-    rebuildKeyOptions();
-    syncControls();
-    updateSummary();
-    renderChordControls();
-    drawFretboard();
-    renderLegend();
+    renderProgression();buildEditors();buildRangeControls();
+    document.querySelectorAll(".view-button").forEach(button=>button.classList.toggle("active",button.dataset.view===state.view));
+    if(state.view==="current")drawCurrent();else drawTransition();
+    renderLegend();renderAnalysis();
+    el.previousChord.textContent=`← ${chordName(state.progression[(state.active+2)%3])}`;
+    el.nextChord.textContent=`${chordName(state.progression[(state.active+1)%3])} →`;
   }
 
-  function setScaleType(value){
-    if(!SCALE_TYPES[value]) return;
-    state.scaleType = value;
-    state.activeDegree = 0;
-    saveState();
-    render();
-  }
-
-  elements.settingsToggle.addEventListener("click", () => {
-    const expanded = elements.settingsToggle.getAttribute("aria-expanded") === "true";
-    elements.settingsToggle.setAttribute("aria-expanded", String(!expanded));
-    elements.settingsBody.classList.toggle("hidden", expanded);
+  el.editProgression.addEventListener("click",()=>{
+    const expanded=el.editProgression.getAttribute("aria-expanded")==="true";el.editProgression.setAttribute("aria-expanded",String(!expanded));
+    el.progressionEditor.classList.toggle("hidden",expanded);el.editProgression.textContent=expanded?"Edit":"Done";
   });
-
-  elements.keySelect.addEventListener("change", () => {
-    state.root = Number(elements.keySelect.value);
-    state.activeDegree = 0;
-    saveState();
-    render();
+  el.settingsToggle.addEventListener("click",()=>{
+    const expanded=el.settingsToggle.getAttribute("aria-expanded")==="true";el.settingsToggle.setAttribute("aria-expanded",String(!expanded));el.settingsBody.classList.toggle("hidden",expanded);
   });
+  document.querySelectorAll(".view-button").forEach(button=>button.addEventListener("click",()=>{state.view=button.dataset.view;save();render()}));
+  el.minFret.addEventListener("change",()=>{state.minFret=Number(el.minFret.value);normalizeRange("min");state.anchors=[null,null,null];save();render()});
+  el.maxFret.addEventListener("change",()=>{state.maxFret=Number(el.maxFret.value);normalizeRange("max");state.anchors=[null,null,null];save();render()});
+  el.previousChord.addEventListener("click",()=>{state.active=(state.active+2)%3;save();render()});
+  el.nextChord.addEventListener("click",()=>{state.active=(state.active+1)%3;save();render()});
 
-  elements.scaleSelect.addEventListener("change", () => setScaleType(elements.scaleSelect.value));
-
-  elements.minFret.addEventListener("change", () => {
-    state.minFret = Number(elements.minFret.value);
-    normalizeRange("min");
-    saveState();
-    render();
-  });
-
-  elements.maxFret.addEventListener("change", () => {
-    state.maxFret = Number(elements.maxFret.value);
-    normalizeRange("max");
-    saveState();
-    render();
-  });
-
-  document.querySelectorAll(".range-preset").forEach(button => button.addEventListener("click", () => {
-    state.minFret = Number(button.dataset.min);
-    state.maxFret = Number(button.dataset.max);
-    saveState();
-    render();
-  }));
-
-  elements.showPath.addEventListener("change", () => {
-    state.showPath = elements.showPath.checked;
-    saveState();
-    render();
-  });
-
-  document.querySelectorAll(".position-button").forEach(button => button.addEventListener("click", () => {
-    state.pathPosition = Number(button.dataset.position);
-    saveState();
-    render();
-  }));
-
-  document.querySelectorAll(".display-button").forEach(button => button.addEventListener("click", () => {
-    state.display = button.dataset.display;
-    saveState();
-    render();
-  }));
-
-  loadState();
-  buildFretOptions();
-  render();
+  load();render();
 })();
 </script>
 </body>
